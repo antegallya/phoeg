@@ -4,8 +4,6 @@
 #include "graph.hpp"
 #include "transformations.hpp"
 
-//#include <boost/graph/graph_concepts.hpp>
-//#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
@@ -237,51 +235,6 @@ namespace phoeg
         return isConnected(g) && (numEdges(g) == order(g)-1);
     }
 
-    //TODO change it for contract in graph class
-    //template <class Graph>
-    //Graph contract(typename graph_traits<Graph>::vertex_descriptor u, typename graph_traits<Graph>::vertex_descriptor v, const Graph & g)
-    //{
-        //Graph g1(order(g)-1);
-        //if (u > v)
-        //{
-            //typename graph_traits<Graph>::vertex_descriptor tmp = u;
-            //u = v;
-            //v = tmp;
-        //}
-        //for (long i = 0; i < order(g); i++)
-        //{
-            //for (long j = i+1; j < order(g); j++)
-            //{
-                //if (edge(i,j,g).second)
-                //{
-                    //if (j == v && i != u)
-                    //{
-                        //add_edge(i,u,g1);
-                    //}
-                    //else if (i == v)
-                    //{
-                        //add_edge(u,j-1,g1);
-                    //}
-                    //else if (j != v)
-                    //{
-                        //long a = i;
-                        //long b = j;
-                        //if (i > v)
-                        //{
-                            //a--;
-                        //}
-                        //if (j > v)
-                        //{
-                            //b--;
-                        //}
-                        //add_edge(a,b,g1);
-                    //}
-                //}
-            //}
-        //}
-        //return g1;
-    //}
-
     /**
      * Computes the number of non-equivalent
      * colorings of the graph g.
@@ -339,6 +292,60 @@ namespace phoeg
         }
         return boyer_myrvold_planarity_test(h);
     }
-} // namespace phoeg
+
+    template <class Graph>
+    std::vector<long> listEccentricities(const Graph & g)
+    {
+        dMatrix dist = distanceMatrix(g);
+        long n = order(g);
+        std::vector<long> res(n);
+        for (long i = 0; i < n; i++)
+        {
+            long m = 0;
+            for (long j = 0; j < n; j++)
+            {
+                if (m < dist[i][j])
+                {
+                    m = dist[i][j];
+                }
+            }
+            res[i] = m;
+        }
+        make_heap(res.begin(), res.end());
+        sort_heap(res.begin(), res.end());
+        return res;
+    }
+
+    /**
+     * Compute the eccentric connectivity of a graph g.
+     * i.e., the sum for every node v of the products
+     * between the eccentricity of v and its degree.
+     * The graph needs to be connected.
+     */
+    template <class Graph>
+    long eccentricConnectivity(const Graph & g)
+    {
+        long res = 0, n = order(g);
+        dMatrix dist = distanceMatrix(g);
+        for (long i = 0; i < n; i++)
+        {
+            long ecc = 0, deg = 0;
+            for (long j = 0; j < n; j++)
+            {
+                if (edge(i,j,g).second)
+                {
+                    deg++;
+                }
+                if (dist[i][j] > ecc)
+                {
+                    ecc = dist[i][j];
+                }
+            }
+            res += ecc * deg;
+        }
+        return res;
+    }
+
+} //namespace phoeg
 
 #endif
