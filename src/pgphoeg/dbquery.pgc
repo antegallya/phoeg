@@ -1,0 +1,147 @@
+#include <postgres.h>
+#include "fmgr.h"
+#include "utils/geo_decls.h"
+#include <stdio.h>
+
+/* A magic block is required as of PostgreSQL 8.2.
+   To include a magic block, write this in one
+   (and only one) of the module source files,
+   after having included the header fmgr.h: */
+#ifdef PG_MODULE_MAGIC
+PG_MODULE_MAGIC;
+#endif
+
+EXEC SQL WHENEVER SQLERROR sqlprint;
+
+void dump_sqlca(void){
+  int     i;
+  printf("sqlca\n" );
+  printf("sqlaid                  - %s\n", sqlca.sqlcaid);
+  printf("sqlabc                  - %d\n", sqlca.sqlabc);
+  printf("sqlcode                 - %d\n", sqlca.sqlcode);
+  printf("sqlerrml                - %d\n", sqlca.sqlerrm.sqlerrml);
+  printf("sqlerrmc                - %s\n", sqlca.sqlerrm.sqlerrmc);
+  printf("sqlerrp                 - %s\n", sqlca.sqlerrp);
+  printf("sqlerrd[1] (oid)        - %d\n", sqlca.sqlerrd[1]);
+  printf("sqlerrd[2] (rows)       - %d\n", sqlca.sqlerrd[2]);
+  printf("sqlwarn[0]              - %c\n", sqlca.sqlwarn[0]);
+  printf("sqlwarn[1] (truncation) - %c\n", sqlca.sqlwarn[1]);
+  printf("sqlwarn[2] (non-fatal)  - %c\n", sqlca.sqlwarn[2]);
+}
+
+void connect_db() {
+  EXEC SQL CONNECT TO graphedrondb@localhost AS graphedrondb USER graphedron;
+
+  if(sqlca.sqlcode == 0) {
+    printf("Connected to 'graphedrondb'.\n");
+  } else {
+    printf("Error: %s\n", sqlca.sqlerrm.sqlerrmc);
+    dump_sqlca();
+  }
+}
+
+void disconnect_db() 
+{
+  EXEC SQL DISCONNECT;
+}
+
+/* --> Fibonacci implementation */
+/* Easy implementation of fib with indirect recursion. */
+int fib(int (*mem_fib)(int a), int k)
+{
+  if (k == 0 || k == 1) 
+    return 1;
+  
+  return mem_fib(k - 1) + mem_fib(k - 2);
+}
+
+/* Function that will retrieve fibonacci values from the table. */
+int mem_fib(int k)
+{
+  printf("Call mem_fib(%i)\n", k);
+  EXEC SQL BEGIN DECLARE SECTION;
+  int key = k;
+  int val;
+  int val_ind;
+  EXEC SQL END DECLARE SECTION;
+  EXEC SQL SELECT value INTO :val FROM fib WHERE key = :key;
+    
+  if (val_ind < 0) {
+    printf("Value was NULL");
+    return 0;
+  }
+  /*EXEC SQL INSERT INTO Fib (Key, Value) VALUES (2, 2);
+  EXEC SQL COMMIT;*/
+  return val;
+}
+
+/* Function that will be exported to Postgres. */
+/*PG_FUNCTION_INFO_V1(pg_fib);
+Datum
+pg_fib(PG_FUNCTION_ARGS)
+{
+  int32 key = PG_GETARG_INT32(0);
+  
+  PG_RETURN_INT32(fib(*mem_fib, key));
+}*/
+
+void declare_fib() {
+  CREATE OR REPLACE FUNCTION fib_mem(key integer, value integer)
+    RETURNS integer
+    STRICT
+    LANGUAGE SQL
+  AS $$
+    INSERT INTO fib VALUES ($1, $2);
+    SELECT $2;
+  $$;
+
+  CREATE OR REPLACE FUNCTION ffib(integer)
+    RETURNS integer
+    LANGUAGE SQL
+  AS $$
+    SELECT COALESCE(
+      (SELECT value FROM fib WHERE key=$1),
+      fib_mem(
+        $1,
+        fib_c_impl(ffib, $1)
+      )
+    );
+  $$;
+
+}
+
+/* Fibonacci implementation <-- */
+
+int main(int argc, char *argv[])
+{
+  connect_db();
+
+  printf("QUERY -> %d\n", mem_fib(5));
+  
+  disconnect_db();
+
+  return 0;
+}
+
+
+CREATE OR REPLACE FUNCTION fib_mem(key integer, value integer)
+  RETURNS integer
+  STRICT
+  LANGUAGE SQL
+AS $$
+  INSERT INTO fib(key, value) VALUES ($1, $2) RETURNING value;
+$$;
+
+CREATE OR REPLACE FUNCTION ffib(integer)
+  RETURNS integer
+  LANGUAGE SQL
+AS $$
+  SELECT COALESCE(
+    (SELECT value FROM fib WHERE key=$1),
+    fib_mem(
+      $1,
+      CASE WHEN $1 < 2 THEN $1 ELSE ffib($1-2) + ffib($1-1) END
+    )
+  );
+$$;
+
