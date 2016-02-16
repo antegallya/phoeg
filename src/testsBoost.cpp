@@ -266,15 +266,36 @@ BOOST_AUTO_TEST_CASE(planarityTest)
 }
 
 //TODO correct contraction
-BOOST_AUTO_TEST_CASE(numColTest)
+//BOOST_AUTO_TEST_CASE(numColTest)
+//{
+    //Graph g(2);
+    //BOOST_CHECK_EQUAL(2,numCol(g));
+    //BOOST_CHECK_EQUAL(52, numCol(g1));
+    //BOOST_CHECK_EQUAL(13, numCol(g2));
+    //BOOST_CHECK_EQUAL(15, numCol(g3));
+    //BOOST_CHECK_EQUAL(8, numCol(g4));
+    //BOOST_CHECK_EQUAL(1, numCol(g5));
+//}
+
+BOOST_AUTO_TEST_CASE(listEccentricitiesTest)
 {
-    Graph g(2);
-    BOOST_CHECK_EQUAL(2,numCol(g));
-    BOOST_CHECK_EQUAL(52, numCol(g1));
-    BOOST_CHECK_EQUAL(13, numCol(g2));
-    BOOST_CHECK_EQUAL(15, numCol(g3));
-    BOOST_CHECK_EQUAL(8, numCol(g4));
-    BOOST_CHECK_EQUAL(1, numCol(g5));
+    long g3t[] = {2,2,3,3,3};
+    checkEqualVector(initVector(g3t,5), listEccentricities(g3));
+    long g4t[] = {2,2,2,2,2};
+    checkEqualVector(initVector(g4t,5), listEccentricities(g4));
+    long g5t[] = {0};
+    checkEqualVector(initVector(g5t,1), listEccentricities(g5));
+    long g6t[] = {1,1,1,1,1};
+    checkEqualVector(initVector(g6t,5), listEccentricities(g6));
+}
+
+//Only for connected graphs
+BOOST_AUTO_TEST_CASE(eccentricConnectivityTest)
+{
+    BOOST_CHECK_EQUAL(19, eccentricConnectivity(g3));
+    BOOST_CHECK_EQUAL(24, eccentricConnectivity(g4));
+    BOOST_CHECK_EQUAL(0, eccentricConnectivity(g5));
+    BOOST_CHECK_EQUAL(20, eccentricConnectivity(g6));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

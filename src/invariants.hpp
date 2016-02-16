@@ -283,38 +283,38 @@ Graph contract(const Graph & g, typename graph_traits<Graph>::vertex_descriptor 
  * Computes the number of non-equivalent
  * colorings of the graph g.
  */
-template<class Graph>
-long numCol(const Graph & g)
-{
-    long n = order(g);
-    if (n == 1 || minDegree(g) == n-1)
-    {
-        return 1;
-    }
-    typedef typename graph_traits<Graph>::vertex_iterator vertex_iter;
-    typedef std::pair<vertex_iter, vertex_iter> p_vertex_iter;
-    typedef typename graph_traits<Graph>::vertex_descriptor vertex;
-    vertex u,v;
-    bool nonEdgeFound = false;
-    for (p_vertex_iter vp = vertices(g); vp.first != vp.second && !nonEdgeFound; ++vp.first)
-    {
-        for (vertex_iter w = vp.first+1; w != vp.second && !nonEdgeFound; ++w)
-        {
-            if (!edge(*vp.first, *w, g).second)
-            {
-                u = *vp.first;
-                v = *w;
-                nonEdgeFound = true;
-            }
-        }
-    }
-    Graph g1 = contract_impl(g, u, v);
-    long num = numCol(g1);
-    Graph g2(g);
-    add_edge(u,v,g2);
-    num += numCol(g2);
-    return num;
-}
+//template<class Graph>
+//long numCol(const Graph & g)
+//{
+    //long n = order(g);
+    //if (n == 1 || minDegree(g) == n-1)
+    //{
+        //return 1;
+    //}
+    //typedef typename graph_traits<Graph>::vertex_iterator vertex_iter;
+    //typedef std::pair<vertex_iter, vertex_iter> p_vertex_iter;
+    //typedef typename graph_traits<Graph>::vertex_descriptor vertex;
+    //vertex u,v;
+    //bool nonEdgeFound = false;
+    //for (p_vertex_iter vp = vertices(g); vp.first != vp.second && !nonEdgeFound; ++vp.first)
+    //{
+        //for (vertex_iter w = vp.first+1; w != vp.second && !nonEdgeFound; ++w)
+        //{
+            //if (!edge(*vp.first, *w, g).second)
+            //{
+                //u = *vp.first;
+                //v = *w;
+                //nonEdgeFound = true;
+            //}
+        //}
+    //}
+    //Graph g1 = contract_impl(g, u, v);
+    //long num = numCol(g1);
+    //Graph g2(g);
+    //add_edge(u,v,g2);
+    //num += numCol(g2);
+    //return num;
+//}
 
 /**
  * Checks weither a graph g is planar.
@@ -337,6 +337,59 @@ bool isPlanar(const Graph & g)
         add_edge(u,v,h);
     }
     return boyer_myrvold_planarity_test(h);
+}
+
+template <class Graph>
+std::vector<long> listEccentricities(const Graph & g)
+{
+    dMatrix dist = distanceMatrix(g);
+    long n = order(g);
+    std::vector<long> res(n);
+    for (long i = 0; i < n; i++)
+    {
+        long m = 0;
+        for (long j = 0; j < n; j++)
+        {
+            if (m < dist[i][j])
+            {
+                m = dist[i][j];
+            }
+        }
+        res[i] = m;
+    }
+    make_heap(res.begin(), res.end());
+    sort_heap(res.begin(), res.end());
+    return res;
+}
+
+/**
+ * Compute the eccentric connectivity of a graph g.
+ * i.e., the sum for every node v of the products
+ * between the eccentricity of v and its degree.
+ * The graph needs to be connected.
+ */
+template <class Graph>
+long eccentricConnectivity(const Graph & g)
+{
+    long res = 0, n = order(g);
+    dMatrix dist = distanceMatrix(g);
+    for (long i = 0; i < n; i++)
+    {
+        long ecc = 0, deg = 0;
+        for (long j = 0; j < n; j++)
+        {
+            if (edge(i,j,g).second)
+            {
+                deg++;
+            }
+            if (dist[i][j] > ecc)
+            {
+                ecc = dist[i][j];
+            }
+        }
+        res += ecc * deg;
+    }
+    return res;
 }
 
 #endif
