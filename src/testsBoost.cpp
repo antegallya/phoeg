@@ -6,6 +6,7 @@
 
 using namespace boost;
 using namespace std;
+using namespace phoeg;
 
 typedef adjacency_matrix<undirectedS> Graph;
 //typedef adjacency_list<vecS,vecS,undirectedS> Graph;
