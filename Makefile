@@ -3,7 +3,7 @@ opt = --std=c++11
 dst = build
 src = src
 
-libs = graph.hpp invariants.hpp transformations.hpp
+libs = graph.hpp invariants.hpp transformations.hpp graph6.cpp
 
 exec = test.cpp
 

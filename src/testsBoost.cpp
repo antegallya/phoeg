@@ -2,6 +2,7 @@
 #include <boost/graph/graph_utility.hpp>
 #include "graph.hpp"
 #include "invariants.hpp"
+#include "graph6.hpp"
 #define BOOST_TEST_MODULE invariantsTests
 #include <boost/test/included/unit_test.hpp>
 
@@ -181,6 +182,27 @@ void checkEqualMatrix(dMatrix m, dMatrix n)
     }
 }
 
+template <class Graph>
+void checkEqualGraph(const Graph& g1, const Graph& g2)
+{
+    typedef pair<vertex_iter, vertex_iter> p_vertex_iter;
+    BOOST_CHECK_EQUAL(order(g1), order(g2));
+    BOOST_CHECK_EQUAL(numEdges(g1), numEdges(g2));
+    p_vertex_iter u1 = vertices(g1), u2 = vertices(g2);
+    while (u1.first != u1.second && u2.first != u2.second)
+    {
+        p_vertex_iter v1 = vertices(g1), v2 = vertices(g2);
+        while (v1.first != u1.first && v2.first != u2.first)
+        {
+            BOOST_CHECK(edge(*u1.first,*v1.first, g1).second == edge(*u2.first,*v2.first, g2).second);
+            v1.first++;
+            v2.first++;
+        }
+        u1.first++;
+        u2.first++;
+    }
+}
+
 vector<long> initVector(long arr[], long size)
 {
     vector<long> v(arr, arr+size);
@@ -270,6 +292,26 @@ BOOST_AUTO_TEST_CASE(numColTest)
     BOOST_CHECK_EQUAL(15, numCol(g3));
     BOOST_CHECK_EQUAL(8, numCol(g4));
     BOOST_CHECK_EQUAL(1, numCol(g5));
+}
+
+BOOST_AUTO_TEST_CASE(toGraph6Test)
+{
+    BOOST_CHECK("D??"==convertToGraph6(g1));
+    BOOST_CHECK("DwC"==convertToGraph6(g2));
+    BOOST_CHECK("DqO"==convertToGraph6(g3));
+    BOOST_CHECK("Djc"==convertToGraph6(g4));
+    BOOST_CHECK("@"==convertToGraph6(g5));
+    BOOST_CHECK("D~{"==convertToGraph6(g6));
+}
+
+BOOST_AUTO_TEST_CASE(fromGraph6Test)
+{
+    checkEqualGraph(convertFromGraph6("D??"),g1);
+    checkEqualGraph(convertFromGraph6("DwC"),g2);
+    checkEqualGraph(convertFromGraph6("DqO"),g3);
+    checkEqualGraph(convertFromGraph6("Djc"),g4);
+    checkEqualGraph(convertFromGraph6("@"),g5);
+    checkEqualGraph(convertFromGraph6("D~{"),g6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

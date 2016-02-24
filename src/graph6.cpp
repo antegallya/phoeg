@@ -1,7 +1,6 @@
 #include "graph6.hpp"
 #include "invariants.hpp"
 
-#include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/graph_utility.hpp>
 
 using namespace std;
