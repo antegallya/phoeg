@@ -283,16 +283,37 @@ BOOST_AUTO_TEST_CASE(planarityTest)
 }
 
 //TODO correct contraction
-//BOOST_AUTO_TEST_CASE(numColTest)
-//{
-    //Graph g(2);
-    //BOOST_CHECK_EQUAL(2,numCol(g));
-    //BOOST_CHECK_EQUAL(52, numCol(g1));
-    //BOOST_CHECK_EQUAL(13, numCol(g2));
-    //BOOST_CHECK_EQUAL(15, numCol(g3));
-    //BOOST_CHECK_EQUAL(8, numCol(g4));
-    //BOOST_CHECK_EQUAL(1, numCol(g5));
-//}
+BOOST_AUTO_TEST_CASE(numColTest)
+{
+    Graph g(2);
+    BOOST_CHECK_EQUAL(2,numCol(g));
+    BOOST_CHECK_EQUAL(52, numCol(g1));
+    BOOST_CHECK_EQUAL(13, numCol(g2));
+    BOOST_CHECK_EQUAL(15, numCol(g3));
+    BOOST_CHECK_EQUAL(8, numCol(g4));
+    BOOST_CHECK_EQUAL(1, numCol(g5));
+}
+
+
+BOOST_AUTO_TEST_CASE(toGraph6Test)
+{
+    BOOST_CHECK("D??"==convertToGraph6(g1));
+    BOOST_CHECK("DwC"==convertToGraph6(g2));
+    BOOST_CHECK("DqO"==convertToGraph6(g3));
+    BOOST_CHECK("Djc"==convertToGraph6(g4));
+    BOOST_CHECK("@"==convertToGraph6(g5));
+    BOOST_CHECK("D~{"==convertToGraph6(g6));
+}
+
+BOOST_AUTO_TEST_CASE(fromGraph6Test)
+{
+    checkEqualGraph(convertFromGraph6("D??"),g1);
+    checkEqualGraph(convertFromGraph6("DwC"),g2);
+    checkEqualGraph(convertFromGraph6("DqO"),g3);
+    checkEqualGraph(convertFromGraph6("Djc"),g4);
+    checkEqualGraph(convertFromGraph6("@"),g5);
+    checkEqualGraph(convertFromGraph6("D~{"),g6);
+}
 
 BOOST_AUTO_TEST_CASE(listEccentricitiesTest)
 {
@@ -313,26 +334,7 @@ BOOST_AUTO_TEST_CASE(eccentricConnectivityTest)
     BOOST_CHECK_EQUAL(24, eccentricConnectivity(g4));
     BOOST_CHECK_EQUAL(0, eccentricConnectivity(g5));
     BOOST_CHECK_EQUAL(20, eccentricConnectivity(g6));
-}
 
-BOOST_AUTO_TEST_CASE(toGraph6Test)
-{
-    BOOST_CHECK("D??"==convertToGraph6(g1));
-    BOOST_CHECK("DwC"==convertToGraph6(g2));
-    BOOST_CHECK("DqO"==convertToGraph6(g3));
-    BOOST_CHECK("Djc"==convertToGraph6(g4));
-    BOOST_CHECK("@"==convertToGraph6(g5));
-    BOOST_CHECK("D~{"==convertToGraph6(g6));
-}
-
-BOOST_AUTO_TEST_CASE(fromGraph6Test)
-{
-    checkEqualGraph(convertFromGraph6("D??"),g1);
-    checkEqualGraph(convertFromGraph6("DwC"),g2);
-    checkEqualGraph(convertFromGraph6("DqO"),g3);
-    checkEqualGraph(convertFromGraph6("Djc"),g4);
-    checkEqualGraph(convertFromGraph6("@"),g5);
-    checkEqualGraph(convertFromGraph6("D~{"),g6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
