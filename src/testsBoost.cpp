@@ -1,21 +1,15 @@
+#include <iostream>
+#include <boost/graph/graph_utility.hpp>
+#include "graph.hpp"
 #include "invariants.hpp"
 #define BOOST_TEST_MODULE invariantsTests
 #include <boost/test/included/unit_test.hpp>
-#include <boost/graph/adjacency_matrix.hpp>
-#include <boost/graph/adjacency_list.hpp>
 
 using namespace boost;
 using namespace std;
 using namespace phoeg;
 
-typedef adjacency_matrix<undirectedS> Graph;
-//typedef adjacency_list<vecS,vecS,undirectedS> Graph;
-typedef graph_traits<Graph>::vertex_descriptor vertex;
-typedef graph_traits<Graph>::edge_descriptor edge;
-typedef graph_traits<Graph>::vertex_iterator vertex_iter;
-typedef graph_traits<Graph>::edge_iterator edge_iter;
 typedef pair<vertex_iter, vertex_iter> p_vertex_iter;
-typedef pair<edge_iter, edge_iter> p_edge_iter;
 
 //Stable set
 Graph g1(5);
