@@ -2,6 +2,7 @@
 #define PHOEG_GRAPH_H
 
 #include <iostream>
+#include <boost/functional/hash.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
 
@@ -17,7 +18,7 @@ namespace phoeg
   typedef typename graph_traits<Graph>::vertices_size_type vertices_size_t;
 
   typedef typename graph_traits<Graph>::vertex_iterator vertex_iter;
-  
+
 }
 
 #endif
