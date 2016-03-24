@@ -2,8 +2,16 @@
 #include <string>
 #include "nauty.h"
 
+//TODO : impossible to include graph.hpp because it conflicts with the graph type in nauty
+
 using namespace std;
 
+/**
+ * Computes the position of the first character encoding the adjacency matrix
+ * in a graph6 format
+ * @param n the order of the graph
+ * @return the first character encoding the adjacency matrix
+ */
 int getStart(int n)
 {
     if (n > 258047)
@@ -20,6 +28,13 @@ int getStart(int n)
     }
 }
 
+/**
+ * Fills the array with the edges of the graph given with the graph6 format
+ * @param graph6 the graph that should be put in array<Plug>(neosnippet_expand)
+ * @param n the order of the graph
+ * @param m the size of the graph
+ * @param array the array to fill
+ */
 void fillArray(const string & graph6, int n, int m, graph *array)
 {
     int start = getStart(n);
@@ -49,6 +64,15 @@ void fillArray(const string & graph6, int n, int m, graph *array)
     }
 }
 
+/**
+ * Convert a graph with the same order as the graph in graph6
+ * to the graph6 format.
+ * @param graph6 a graph with same order as array
+ * @param n the order of the graph
+ * @param m the size of the graph
+ * @param array the graph to convert
+ * @return the graph with the graph6 format
+ */
 string makeSig(const string& graph6, int n, int m, graph* array)
 {
     int start = getStart(n);
@@ -85,6 +109,13 @@ string makeSig(const string& graph6, int n, int m, graph* array)
     return res;
 }
 
+/**
+ * Returns the canonical form of the given graph with n vertices and m edges
+ * @param sig the graph with graph6 format
+ * @param n the order of the graph
+ * @param m the size of the graph
+ * @return the canonical form of the graph
+ */
 std::string cannonForm(std::string sig, int n, int m)
 {
     int lab[n], ptn[n], orbit[n];
