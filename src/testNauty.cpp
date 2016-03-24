@@ -5,5 +5,5 @@ using namespace std;
 
 int main()
 {
-    cannonForm("F~~~~",5,2);
+    printf("%s\n", cannonForm("DV{",5,8).c_str());
 }
