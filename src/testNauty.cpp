@@ -25,8 +25,7 @@ int main()
 {
     Graph g = convertFromGraph6("DV{");
     printGraph(g);
-    string r = cannonForm(convertToGraph6(g),order(g),numEdges(g));
-    printf("%s\n",r.c_str());
-    g = convertFromGraph6(r);
-    printGraph(g);
+    Graph r = cannonForm(g);
+    printf("%s\n",convertToGraph6(r).c_str());
+    printGraph(r);
 }

@@ -3,7 +3,7 @@ opt = --std=c++11
 dst = build
 src = src
 
-libs = graph.hpp invariants.hpp transformations.hpp nauty.h nauty.a nautyInterface.hpp graph6.cpp
+libs = graph.hpp invariants.hpp transformations.hpp nauty.h nauty.a nautyInterface.hpp graph6.hpp
 
 exec = test.cpp
 
