@@ -9,9 +9,7 @@ exec = test.cpp
 
 test = testsBoost.cpp
 
-nauty = testNauty.cpp
-
-default : prepare nauty
+default : prepare test
 
 prepare :
 	test -d $(dst) || mkdir $(dst)
