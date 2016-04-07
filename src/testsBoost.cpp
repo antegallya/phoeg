@@ -6,7 +6,6 @@
 #define BOOST_TEST_MODULE invariantsTests
 #include <boost/test/included/unit_test.hpp>
 
-//using namespace boost;
 using namespace std;
 using namespace phoeg;
 
