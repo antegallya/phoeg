@@ -6,7 +6,6 @@
 #define BOOST_TEST_MODULE invariantsTests
 #include <boost/test/included/unit_test.hpp>
 
-using namespace boost;
 using namespace std;
 using namespace phoeg;
 
@@ -27,41 +26,40 @@ Graph g6(5);
 
 void initGraphs()
 {
-    add_edge(0,1,g2);
-    add_edge(1,2,g2);
-    add_edge(2,0,g2);
-    add_edge(3,4,g2);
+    boost::add_edge(0,1,g2);
+    boost::add_edge(1,2,g2);
+    boost::add_edge(2,0,g2);
+    boost::add_edge(3,4,g2);
 
-    add_edge(0,1,g3);
-    add_edge(0,2,g3);
-    add_edge(1,3,g3);
-    add_edge(1,4,g3);
+    boost::add_edge(0,1,g3);
+    boost::add_edge(0,2,g3);
+    boost::add_edge(1,3,g3);
+    boost::add_edge(1,4,g3);
 
-    add_edge(0,1,g4);
-    add_edge(1,2,g4);
-    add_edge(2,3,g4);
-    add_edge(3,4,g4);
-    add_edge(4,0,g4);
-    add_edge(1,3,g4);
+    boost::add_edge(0,1,g4);
+    boost::add_edge(1,2,g4);
+    boost::add_edge(2,3,g4);
+    boost::add_edge(3,4,g4);
+    boost::add_edge(4,0,g4);
+    boost::add_edge(1,3,g4);
 
-    add_edge(0,1,g6);
-    add_edge(0,2,g6);
-    add_edge(0,3,g6);
-    add_edge(0,4,g6);
-    add_edge(1,2,g6);
-    add_edge(1,3,g6);
-    add_edge(1,4,g6);
-    add_edge(2,3,g6);
-    add_edge(2,4,g6);
-    add_edge(3,4,g6);
+    boost::add_edge(0,1,g6);
+    boost::add_edge(0,2,g6);
+    boost::add_edge(0,3,g6);
+    boost::add_edge(0,4,g6);
+    boost::add_edge(1,2,g6);
+    boost::add_edge(1,3,g6);
+    boost::add_edge(1,4,g6);
+    boost::add_edge(2,3,g6);
+    boost::add_edge(2,4,g6);
+    boost::add_edge(3,4,g6);
 
 }
 
 void clearGraph(Graph & g)
 {
-    for (p_vertex_iter it = vertices(g); it.first != it.second; ++it.first)
-    {
-        clear_vertex(*it.first, g);
+    for (p_vertex_iter it = vertices(g); it.first != it.second; ++it.first) {
+      boost::clear_vertex(*it.first, g);
     }
 }
 
@@ -188,18 +186,16 @@ void checkEqualGraph(const Graph& g1, const Graph& g2)
     typedef pair<vertex_iter, vertex_iter> p_vertex_iter;
     BOOST_CHECK_EQUAL(order(g1), order(g2));
     BOOST_CHECK_EQUAL(numEdges(g1), numEdges(g2));
-    p_vertex_iter u1 = vertices(g1), u2 = vertices(g2);
-    while (u1.first != u1.second && u2.first != u2.second)
-    {
-        p_vertex_iter v1 = vertices(g1), v2 = vertices(g2);
-        while (v1.first != u1.first && v2.first != u2.first)
-        {
-            BOOST_CHECK(edge(*u1.first,*v1.first, g1).second == edge(*u2.first,*v2.first, g2).second);
-            v1.first++;
-            v2.first++;
-        }
-        u1.first++;
-        u2.first++;
+    p_vertex_iter u1 = boost::vertices(g1), u2 = boost::vertices(g2);
+    while (u1.first != u1.second && u2.first != u2.second) {
+      p_vertex_iter v1 = boost::vertices(g1), v2 = boost::vertices(g2);
+      while (v1.first != u1.first && v2.first != u2.first) {
+        BOOST_CHECK(edge(*u1.first,*v1.first, g1).second == edge(*u2.first,*v2.first, g2).second);
+        v1.first++;
+        v2.first++;
+      }
+      u1.first++;
+      u2.first++;
     }
 }
 
