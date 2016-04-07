@@ -1,10 +1,11 @@
 #include <cstdio>
 #include <string>
 #include "nauty.h"
+#include "graph.hpp"
 
 //TODO : impossible to include graph.hpp because it conflicts with the graph type in nauty
 
-using namespace std;
+//using namespace std;
 
 /**
  * Computes the position of the first character encoding the adjacency matrix
@@ -35,7 +36,7 @@ int getStart(int n)
  * @param m the size of the graph
  * @param array the array to fill
  */
-void fillArray(const string & graph6, int n, int m, graph *array)
+void fillArray(const std::string & graph6, int n, int m, graph *array)
 {
     int start = getStart(n);
     if (graph6.size() > 0)
@@ -73,10 +74,10 @@ void fillArray(const string & graph6, int n, int m, graph *array)
  * @param array the graph to convert
  * @return the graph with the graph6 format
  */
-string makeSig(const string& graph6, int n, int m, graph* array)
+std::string makeSig(const std::string& graph6, int n, int m, graph* array)
 {
     int start = getStart(n);
-    string res = graph6.substr(0,start);
+    std::string res = graph6.substr(0,start);
     int l = 0;
     char r = 0;
     set *row;
