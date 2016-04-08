@@ -33,6 +33,160 @@ namespace phoeg
         return num_vertices(g);
     }
 
+  namespace detail {
+
+    template <class Graph>
+    bool is_locally_proper_color(const Graph & g,
+                                 boost::shared_array<int>& col,
+                                 const int & v, const int c, const int & nv)
+    {
+      int i;
+      for (i = 0; i < nv; i++)
+        if (edge(i, v, g).second && col[i] == c)
+          return false;
+
+      return true;
+    }
+
+    template <class Graph>
+    bool col_rec(const Graph & g, int k,
+                 boost::shared_array<int>& col,
+                 int v = 0, bool robust = false);
+
+    template <class Graph>
+    bool is_locally_recolorable(const Graph & g, const int & k,
+                                boost::shared_array<int>& col, const int & v)
+    {
+      bool found = false;
+      int vc = col[v];
+      int c;
+
+      /* Try each color reassignation for v. */
+      for (c = 1; c <= k && !found; c++) {
+        /* Skip the original color since we want a strict recoloring. */
+        if (c == vc)
+          continue;
+
+        col[v] = c;
+
+        /* Try to recolor the neighbors of v. First reset their colors. */
+        int i;
+        for (i = 0; i < order(g); i++)
+          if (edge(i, v, g).second)
+            col[i] = 0;
+
+        /* Then, reassign colors. */
+        found = col_rec(g, k, col);
+      }
+
+      return found;
+    }
+
+    template <class Graph>
+    bool is_robust_coloring(const Graph & g, const int & k,
+                            const boost::shared_array<int>& col)
+    {
+      bool ok = true;
+      boost::shared_array<int> tcol(new int[order(g)]);
+
+      /* The coloring is robust if each vertex is locally recolorable. */
+      for (int v = 0; v < order(g) && ok; v++) {
+        std::copy(col.get(), col.get() + order(g), tcol.get());
+        if (!is_locally_recolorable(g, k, tcol, v))
+          ok = false;
+      }
+
+      return ok;
+    }
+
+    template <class Graph>
+    bool col_rec(const Graph & g, int k,
+                 boost::shared_array<int>& col, int v, bool robust)
+    {
+      if (v == order(g)) {
+        return !robust || is_robust_coloring(g, k, col);
+      }
+      else if (col[v] != 0) {
+        /* The color of that node is forced.
+           Check its properness and continue. */
+        return is_locally_proper_color(g, col, v, col[v], v) &&
+          col_rec(g, k, col, v + 1, robust);
+      }
+      else {
+        /* Induction hypothesis: v must be colored and all previous nodes are
+           well-colored. */
+        bool found = false;
+        int c, i;
+        for (c = 1; c <= k && !found; c++) {
+          /* Can v be colored with c ? */
+          if (is_locally_proper_color(g, col, v, c, v)) {
+            /* If yes, continue this coloration. */
+            col[v] = c;
+            found = col_rec(g, k, col, v + 1, robust);
+          }
+        }
+
+        /* Reset the color if it's not a good one. */
+        if (!found)
+          col[v] = 0;
+
+        return found;
+      }
+    }
+
+    template <class Graph>
+    bool is_k_colorable(const Graph & g, const int & k, bool robust = false)
+    {
+      boost::shared_array<int> col(new int[order(g)]);
+      int i;
+      bool ok;
+
+      if (order(g) > 0)
+        col[0] = 1;
+
+      for (i = 1; i < order(g); i++)
+        col[i] = 0;
+
+      ok = col_rec(g, k, col, 0, robust);
+
+      return ok;
+    }
+
+    /* This function returns the number of colors used
+       in a sequential vertex coloring */
+    template <class Graph>
+    int seq_colors(const Graph & g)
+    {
+      int n = order(g);
+      boost::shared_array<int> col(new int[n]);
+      int i, j;
+      int nc = 0;
+      int this_color;
+      bool ok;
+
+      for (i = 0; i < n; i++)
+        col[i] = 0;
+
+      for (i = 0; i < n; i++) {
+        this_color = 0;
+        ok = false;
+        while(!ok) {
+          ok = true;
+          this_color++;
+          for (j = 0; j < n && ok; j++) {
+            if (col[j] == this_color && edge(i, j, g).second)
+              ok = false;
+          }
+        }
+        col[i] = this_color;
+        if (nc < this_color)
+          nc = this_color;
+      }
+
+      return nc;
+    }
+  } // namespace detail
+
     /**
      * Return the size of the graph g.
      * i.e., the number of edges of g.
@@ -345,6 +499,101 @@ namespace phoeg
         }
         return res;
     }
+
+  template <class Graph>
+  long maxIndependentSet(const Graph & g) {
+    int n = order(g);
+
+    if (n <= 2) {
+      if (n <= 1)
+        return n;
+      else if (edge(0, 1, g).second)
+        return 1;
+      else
+        return 2;
+    }
+
+    /* Nodes in current clique candidate. */
+    boost::shared_array<int> S(new int[n]);
+    int i, j, s, /* Loops indices. */
+      flag, /* Next node in the B&B. */
+      last, /* Last node added to the clique. */
+      size, /* Current max clique size. */
+      conn; /* Is the current edge connected to every
+               node in the current clique ? */
+
+    for (i = 0; i < n; i++)
+      S[i] = -1;
+
+    size = 0;
+    S[0] = 0;
+    flag = 1;
+    last = 1;
+    for (s = 0; s < n - 1; s++) {
+      S[0] = s;
+      while (S[0] >= 0) {
+        for (i = flag; i < n; i++) {
+          conn = 1;
+          for (j = 0; j < last && conn; j++) {
+            if (edge(S[j], i, g).second)
+              conn = 0;
+          }
+          if (conn) {
+            S[last] = i;
+            last++;
+            flag = i + 1;
+            if (last > size)
+              size = last;
+          }
+        }
+        last--;
+        flag = S[last] + 1;
+        S[last] = -1;
+      }
+    }
+
+    return size;
+  }
+
+  template <class Graph>
+  long minVertexCover(const Graph &g) {
+    return order(g) - maxIndependentSet(g);
+  }
+
+  template <class Graph>
+  long chromaticNumber(const Graph & g) {
+    if (order(g) <= 1)
+      return order(g);
+
+    /* Lower bound. */
+    int lb;
+    /* Upper bound. */
+    int ub;
+    /* Chromatic number */
+    int chi;
+    /* Current number of colors used. */
+    int k;
+
+    double f = double(order(g)) / double(maxIndependentSet(g));
+    lb = int(ceil(f));
+    ub = detail::seq_colors(g);
+
+    chi = lb;
+
+    bool stop = false;
+    if (lb < ub) {
+      for (k = lb; k < ub && !stop; k++) {
+        if (detail::is_k_colorable(g, k)) {
+          chi = k;
+          stop = true;
+        }
+      }
+      if (!stop)
+        chi = ub;
+    }
+
+    return chi;
+  }
 
 } //namespace phoeg
 
