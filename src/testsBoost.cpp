@@ -141,6 +141,36 @@ BOOST_AUTO_TEST_CASE(minDegreeTest)
     BOOST_CHECK_EQUAL(4, minDegree(g6));
 }
 
+BOOST_AUTO_TEST_CASE(maxIndependentSetTest)
+{
+    BOOST_CHECK_EQUAL(5, maxIndependentSet(g1));
+    BOOST_CHECK_EQUAL(2, maxIndependentSet(g2));
+    BOOST_CHECK_EQUAL(3, maxIndependentSet(g3));
+    BOOST_CHECK_EQUAL(2, maxIndependentSet(g4));
+    BOOST_CHECK_EQUAL(1, maxIndependentSet(g5));
+    BOOST_CHECK_EQUAL(1, maxIndependentSet(g6));
+}
+
+BOOST_AUTO_TEST_CASE(minVertexCoverTest)
+{
+    BOOST_CHECK_EQUAL(0, minVertexCover(g1));
+    BOOST_CHECK_EQUAL(3, minVertexCover(g2));
+    BOOST_CHECK_EQUAL(2, minVertexCover(g3));
+    BOOST_CHECK_EQUAL(3, minVertexCover(g4));
+    BOOST_CHECK_EQUAL(0, minVertexCover(g5));
+    BOOST_CHECK_EQUAL(4, minVertexCover(g6));
+}
+
+BOOST_AUTO_TEST_CASE(chromaticNumberTest)
+{
+    BOOST_CHECK_EQUAL(1, chromaticNumber(g1));
+    BOOST_CHECK_EQUAL(3, chromaticNumber(g2));
+    BOOST_CHECK_EQUAL(2, chromaticNumber(g3));
+    BOOST_CHECK_EQUAL(3, chromaticNumber(g4));
+    BOOST_CHECK_EQUAL(1, chromaticNumber(g5));
+    BOOST_CHECK_EQUAL(5, chromaticNumber(g6));
+}
+
 BOOST_AUTO_TEST_CASE(isConnectedTest)
 {
     BOOST_CHECK_EQUAL(false, isConnected(g1));
