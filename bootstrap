@@ -1,1 +1,4 @@
 aclocal -I m4 --install
+autoconf
+autoheaders
+automake --add-missing

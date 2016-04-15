@@ -76,7 +76,7 @@ dnl Checks for BOOST library
 AX_BOOST_BASE([1.58],,
   [AC_MSG_ERROR([This program needs Boost,
                  but it was not found in your system])])
-AX_BOOST_GRAPH
+
 
 dnl Checks for C compiler and sets CFLAGS if not set by user
 
