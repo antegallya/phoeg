@@ -16,7 +16,7 @@ namespace phoeg
   typedef typename boost::graph_traits<Graph>::vertices_size_type vertices_size_t;
 
   typedef typename boost::graph_traits<Graph>::vertex_iterator vertex_iter;
-  
+
 }
 
 #endif
