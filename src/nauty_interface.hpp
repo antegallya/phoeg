@@ -1,7 +1,8 @@
 #include <cstdio>
 #include <string>
-#include "nauty.h"
+
 #include "graph.hpp"
+#include "nauty.h"
 
 namespace phoeg
 {
