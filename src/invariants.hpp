@@ -1,9 +1,10 @@
-#ifndef INVARIANTS_IMPL_CPP
-#define INVARIANTS_IMPL_CPP
+#ifndef INVARIANTS_CPP
+#define INVARIANTS_CPP
 
 #include "graph.hpp"
 #include "transformations.hpp"
 
+#include <boost/functional/hash.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
@@ -16,8 +17,6 @@
 #include <deque>
 
 #define INF std::numeric_limits<long>::max()
-
-using namespace boost;
 
 namespace phoeg
 {
@@ -319,7 +318,7 @@ namespace phoeg
     std::vector<long> listDegrees(const Graph & g)
     {
         std::vector<long> list(order(g), 0);
-        typedef typename graph_traits<Graph>::edge_iterator eiter;
+        typedef typename boost::graph_traits<Graph>::edge_iterator eiter;
         std::pair<eiter, eiter> ep;
         for (ep = edges(g); ep.first != ep.second; ++ep.first)
         {
@@ -435,8 +434,9 @@ namespace phoeg
         //We need to convert g into an adjacency_list because
         //the function of boost does not work correctly
         //on adjacency_matrix
-        typedef boost::adjacency_list<vecS, vecS, undirectedS> AdjList;
-        typedef typename graph_traits<Graph>::edge_iterator eiter;
+        typedef boost::adjacency_list<boost::vecS, boost::vecS,
+                                      boost::undirectedS> AdjList;
+        typedef typename boost::graph_traits<Graph>::edge_iterator eiter;
         AdjList h(order(g));
         std::pair<eiter, eiter> ep;
         for (ep = edges(g); ep.first != ep.second; ++ep.first)
