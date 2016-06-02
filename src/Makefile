@@ -1,22 +1,27 @@
 CC=g++
 CFLAGS=-pedantic -Wall -c -W
-LDFLAGS=-lcppunit
-OBJ= Solver.o Main.o
+CPPFLAGS=-W -std=c++11
+LDFLAGS=-lboost_system -lboost_timer
+OBJ= Solver.o main.o
 OBJTEST= unitTest.o maintest.o
 INSTALL=/usr/bin/install -c
 BINDIR=/usr/local/bin
 EXEC=project
 EXECTEST=test
 
-G++ = g++ 
-SOL=solution
+HEADERS=coloringProblem.hpp graphFeatures.hpp invariants.hpp graph6.hpp \
+	graph.hpp SAT.h Minisat/Solver.hpp
+
+G++ = g++
 CLEANPROJECT=cleanProject
 CLEAN = clean
-all: $(CLEAN) $(OBJ) $(SOL)
+all: main
 
 #
 # Dev Tools
 #
+
+.PHONY: solution
 
 # Clean project
 
@@ -29,20 +34,18 @@ clean: $(CLEANPROJECT)
 # Compile
 #
 
-solution: main.o Solver.o
-	$(G++) *.o -o main 
+main: $(OBJ)
+	$(G++) $(LDFLAGS) *.o -o main 
 
 Solver.o: Minisat/Solver.cpp Minisat/Solver.hpp Minisat/SolverTypes.hpp Minisat/Global.hpp Minisat/Heap.hpp
-	$(G++) -c Minisat/Solver.cpp 
+	$(G++) $(CPPFLAGS) -c Minisat/Solver.cpp 
 
-Main.o: main.cpp Minisat/Solver.hpp 
-	$(G++) -c main.cpp
+main.o: main.cpp $(HEADERS)
+	$(G++) $(CPPFLAGS) -c main.cpp
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $<  
 	
-  
-    
 
 
 

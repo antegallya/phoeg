@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string>
 #include <sys/time.h>
+#include <fstream>
 
 using namespace std;
 using namespace boost;

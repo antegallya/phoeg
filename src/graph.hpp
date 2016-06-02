@@ -1,7 +1,6 @@
 #ifndef PHOEG_GRAPH_H
 #define PHOEG_GRAPH_H
 
-#include <iostream>
 #include <boost/functional/hash.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
