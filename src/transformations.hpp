@@ -6,9 +6,6 @@
 #include <boost/concept/requires.hpp>
 #include <map>
 
-using namespace std;
-using namespace boost;
-
 namespace phoeg
 {
 
@@ -59,24 +56,26 @@ namespace phoeg
 
   template <class Graph>
     Graph contract(
-             typename graph_traits<Graph>::vertex_descriptor i,
-             typename graph_traits<Graph>::vertex_descriptor j,
+             typename boost::graph_traits<Graph>::vertex_descriptor i,
+             typename boost::graph_traits<Graph>::vertex_descriptor j,
              const Graph& g)
   {
-    BOOST_STATIC_ASSERT_MSG(boost::is_same<
-                            typename graph_traits<Graph>::directed_category,
-                            undirected_tag>::value,
-                            "input graph must be undirected.");
+    /*BOOST_STATIC_ASSERT_MSG(boost::is_same<
+                            typename boost::graph_traits<Graph>::directed_category,
+                            boost::undirected_tag>::value,
+                            "input graph must be undirected.");*/
     //BOOST_CONCEPT_ASSERT((VertexListGraphConcept<Graph>));
     //BOOST_CONCEPT_ASSERT((AdjacencyMatrixConcept<Graph>));
 
-    typedef typename graph_traits<Graph>::vertex_descriptor vertex;
-    typedef typename graph_traits<Graph>::vertex_iterator vertex_iterator;
+    typedef typename boost::graph_traits<Graph>::vertex_descriptor
+      vertex;
+    typedef typename boost::graph_traits<Graph>::vertex_iterator
+      vertex_iterator;
 
     Graph gc(num_vertices(g) - 1);
-    map<vertex, vertex> m;
-    pair<vertex_iterator, vertex_iterator> git = vertices(gc);
-    pair<vertex_iterator, vertex_iterator> uit = vertices(g);
+    std::map<vertex, vertex> m;
+    std::pair<vertex_iterator, vertex_iterator> git = vertices(gc);
+    std::pair<vertex_iterator, vertex_iterator> uit = vertices(g);
     ++git.first;
     for (; uit.first != uit.second; ++uit.first)
     {
@@ -90,9 +89,11 @@ namespace phoeg
             ++git.first;
         }
     }
-    for (pair<vertex_iterator, vertex_iterator> uit = vertices(g); uit.first != uit.second; ++uit.first)
+    for (std::pair<vertex_iterator, vertex_iterator> uit = vertices(g);
+         uit.first != uit.second; ++uit.first)
     {
-        for (pair<vertex_iterator, vertex_iterator> vit = vertices(g); vit.first != vit.second; ++vit.first)
+      for (std::pair<vertex_iterator, vertex_iterator> vit = vertices(g);
+             vit.first != vit.second; ++vit.first)
         {
             if (edge(*uit.first,*vit.first,g).second)
             {
