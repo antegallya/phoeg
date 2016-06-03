@@ -58,7 +58,6 @@ int chromaticNumber(Graph& g, const char* name, string file)
 {
     int approximation = coloration(g);
     nodesNumber = num_vertices(g);
-    tab = neighborsVector(g);//Creating an array containing the neighbors for each vertice.
     return chromaticNumberSat(g, name, approximation, file);
 }
 
@@ -93,7 +92,7 @@ int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
     {
         for(int j = 1; j <= nodesNumber; j++) 
         {
-	        if (neighborsTest(i-1,j-1,tab))
+	        if (edge(i-1,j-1,g).second)
 	        {
 	            for(int c = 1 ; c <= color; c++) 
 	            {
