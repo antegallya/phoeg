@@ -113,21 +113,6 @@ int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
         solver.addClause(lits);
     }
 
-    // Constraint existence : Only one color by vertice
-    for(int i = 1; i <= nodesNumber; i++) 
-    {
-        for(int c1 = 1 ; c1 <= color; c1++) 
-        {
-            for(int c2 = 1; c2 <= color; c2++)
-            {
-                if(c1 < c2)
-                {
-                    solver.addBinary(~Lit(prop(i,c1)),~Lit(prop(i,c2)));
-                }
-            }
-        }
-    }
-
     int result = solver.solve();//Solve the sat problem
     if(result == 1) //Satisfiable
     {
