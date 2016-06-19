@@ -48,7 +48,7 @@ int coloration(Graph& g)
 */
 int prop(int s, int c)
 { 
-   return ((s-1)*nodesNumber + c)-1;
+   return (c - 1) * nodesNumber + s - 1;
 }
 
 /**
@@ -76,7 +76,7 @@ int chromaticNumber(string graph6, const char* name, string file)
 */
 int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
 {
-	int varNumber = (nodesNumber-1)*nodesNumber+color;
+    int varNumber = nodesNumber * color;
 	
     Solver solver;
     vec<Lit> lits;
