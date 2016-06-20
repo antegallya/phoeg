@@ -3,10 +3,7 @@
 #include <cmath>
 #include "Minisat/Solver.hpp"
 #include <boost/timer/timer.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/undirected_graph.hpp>
 #include <boost/graph/graph_utility.hpp>
-#include <boost/graph/sequential_vertex_coloring.hpp>
 #include "graph.hpp"
 #include "graph6.hpp"
 #include "invariants.hpp"

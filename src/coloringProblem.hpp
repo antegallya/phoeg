@@ -1,16 +1,6 @@
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/undirected_graph.hpp>
-#include <boost/graph/graph_utility.hpp>
-#include <boost/graph/sequential_vertex_coloring.hpp>
+#include <string>
 #include "graph.hpp"
 #include "invariants.hpp"
-#include <cmath>
-#include <string>
-#include <sys/time.h>
-#include <fstream>
-
-using namespace std;
-using namespace boost;
 
 namespace sat
 {
@@ -75,7 +65,7 @@ int chromaticNumber(phoeg::Graph& g)
 /**
 * Call the main method (SAT method) with a good approximation on graph6 format.
 */
-int chromaticNumber(string graph6)
+int chromaticNumber(std::string graph6)
 {
     phoeg::Graph g = phoeg::convertFromGraph6(graph6);
     return chromaticNumber(g);
