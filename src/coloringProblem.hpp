@@ -1,6 +1,8 @@
 #include <string>
+#include <algorithm>
 #include "graph.hpp"
 #include "invariants.hpp"
+#include "Minisat/Solver.hpp"
 
 namespace sat
 {
@@ -18,29 +20,30 @@ inline int prop(int n, int s, int c)
 */
 bool is_k_colorable(phoeg::Graph& g, int k)
 {
+    int i, j, c;
     int n = num_vertices(g);
     int varNumber = (n * (n + 1) - (n - k) * (n - k + 1)) / 2;
 
     Solver solver;
-    vec<Lit> lits;
+    vec<Lit> lits(k);
 
     //Creation of variables
-    for(int i = 0; i < varNumber; i++)
+    for(i = 0; i < varNumber; i++)
         solver.newVar();
 
     // Constraint neighboring
-    for(int i = 1; i <= n; i++)
-        for(int j = 1; j <= n; j++)
+    for(i = 1; i <= n; i++)
+        for(j = 1; j < i; j++)
             if (edge(i-1, j-1, g).second)
-                for(int c = 1 ; c <= std::min(std::min(i, j), k); c++)
+                for(c = 1; c <= std::min(std::min(i, j), k); c++)
                     solver.addBinary(~Lit(prop(n, i, c)),
                                      ~Lit(prop(n, j, c)));
 
     // Constraint existence : One color by node
-    for(int i = 1; i <= n; i++)
+    for(i = 1; i <= n; i++)
     {
         lits.clear();
-        for(int c = 1 ; c <= std::min(k, i); c++)
+        for(c = 1; c <= std::min(k, i); c++)
             lits.push(Lit(prop(n, i, c)));
         solver.addClause(lits);
     }
