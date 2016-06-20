@@ -11,23 +11,18 @@
 
 using namespace std;
 using namespace boost;
-using namespace phoeg;
 
-
-//Declaration of methods
-int chromaticNumberSat(Graph& g, int color);
-
-bool solutionFound = false;
-vector<vector<int> > tab;
-bool firstIter=true;
-
+namespace sat
+{
 
 /**
 *Computes a vertex coloring for the vertices in the graph.
 *The heuristic provides an approximation for the SAT method.
 */
-int coloration(Graph& g)
+int coloration(phoeg::Graph& g)
 {
+    using namespace phoeg;
+
     typedef property_map<Graph, vertex_index_t>::const_type vertex_index_map;
     std::vector<vertices_size_t> color_vec(num_vertices(g));
     iterator_property_map<vertices_size_t*, vertex_index_map> color(&color_vec.front(), get(vertex_index, g));
@@ -47,12 +42,52 @@ inline int prop(int n, int s, int c)
 }
 
 /**
+* Calculate the chromatic number of a graph with a SAT problem.
+*/
+bool is_k_colorable(phoeg::Graph& g, int k)
+{
+    int n = num_vertices(g);
+    int varNumber = (n * (n + 1) - (n - k) * (n - k + 1)) / 2;
+
+    Solver solver;
+    vec<Lit> lits;
+
+    //Creation of variables
+    for(int i = 0; i < varNumber; i++)
+        solver.newVar();
+
+    // Constraint neighboring
+    for(int i = 1; i <= n; i++)
+        for(int j = 1; j <= n; j++)
+            if (edge(i-1, j-1, g).second)
+                for(int c = 1 ; c <= std::min(std::min(i, j), k); c++)
+                    solver.addBinary(~Lit(prop(n, i, c)),
+                                     ~Lit(prop(n, j, c)));
+
+    // Constraint existence : One color by node
+    for(int i = 1; i <= n; i++)
+    {
+        lits.clear();
+        for(int c = 1 ; c <= std::min(k, i); c++)
+            lits.push(Lit(prop(n, i, c)));
+        solver.addClause(lits);
+    }
+
+    return solver.solve(); //Solve the sat problem
+}
+
+/**
 * Call the main method (SAT method) with a good approximation.
 */
-int chromaticNumber(Graph& g)
+int chromaticNumber(phoeg::Graph& g)
 {
-    int approximation = coloration(g);
-    return chromaticNumberSat(g, approximation);
+    /* Approximate the chromatic number and start from there. */
+    int k = coloration(g);
+
+    while (k > 1 && is_k_colorable(g, k - 1))
+        --k;
+
+    return k;
 }
 
 /**
@@ -60,82 +95,8 @@ int chromaticNumber(Graph& g)
 */
 int chromaticNumber(string graph6)
 {
-    Graph g = convertFromGraph6(graph6);
+    phoeg::Graph g = phoeg::convertFromGraph6(graph6);
     return chromaticNumber(g);
 }
 
-/**
-* Calculate the chromatic number of a graph with a SAT problem.
-*/
-int chromaticNumberSat(Graph& g, int color)
-{
-    int n = num_vertices(g);
-    int varNumber = (n * (n + 1) - (n - color) * (n - color + 1)) / 2;
-
-    Solver solver;
-    vec<Lit> lits;
-
-    //Creation of variables
-    for(int i = 0 ;i < varNumber; i++)
-    {
-        solver.newVar();
-    }
-
-    // Constraint neighboring
-    for(int i = 1; i <= n; i++) 
-    {
-        for(int j = 1; j <= n; j++) 
-        {
-            if (edge(i-1,j-1,g).second)
-            {
-                for(int c = 1 ; c <= std::min(std::min(i, j),color); c++)
-                {
-                    solver.addBinary(~Lit(prop(n, i, c)),
-                                     ~Lit(prop(n, j, c)));
-                }
-            }
-        }
-    }
-
-    // Constraint existence : One color by node
-    for(int i = 1; i <= n; i++) 
-    {
-        lits.clear();
-        for(int c = 1 ; c <= std::min(color, i); c++) 
-        {
-            lits.push(Lit(prop(n, i, c)));
-        }
-        solver.addClause(lits);
-    }
-
-    int result = solver.solve();//Solve the sat problem
-    if(result == 1) //Satisfiable
-    {
-        solutionFound= true;
-        if(color > 1)
-           return chromaticNumberSat(g, color-1); //Recursive call with k-1
-        else // Particular case where we return k=1 (k must be greater than 0)
-        {
-            firstIter = true;//Re-initiate for the next call
-            return color;
-        }
-    }
-    else//Insatisfiable
-    {
-        if(solutionFound)//Base case
-        {
-            firstIter = true;//Re-initiate for the next call
-            return color + 1;//Return the chromatic number
-        }
-        else//Particular case where the SAT formula is not satisfiable and we don't have a solution
-        {
-            if(color < n)
-                return chromaticNumberSat(g, color+1); //Recursive call with k+1
-        }
-        
-    }
-    return color;//Return value in case of problems
 }
-
-
-

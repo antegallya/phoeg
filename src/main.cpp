@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
         // SAT computation
         timer_sat.resume();
-        chromatic_sat = chromaticNumber(g);
+        chromatic_sat = sat::chromaticNumber(g);
         timer_sat.stop();
 
         if(chromatic_phoeg != chromatic_sat) {
