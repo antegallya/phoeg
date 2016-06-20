@@ -16,24 +16,6 @@ namespace sat
 {
 
 /**
-*Computes a vertex coloring for the vertices in the graph.
-*The heuristic provides an approximation for the SAT method.
-*/
-int coloration(phoeg::Graph& g)
-{
-    using namespace phoeg;
-
-    typedef property_map<Graph, vertex_index_t>::const_type vertex_index_map;
-    std::vector<vertices_size_t> color_vec(num_vertices(g));
-    iterator_property_map<vertices_size_t*, vertex_index_map> color(&color_vec.front(), get(vertex_index, g));
-
-    //Compute the coloration
-    vertices_size_t num_colors = sequential_vertex_coloring(g, color);
-
-    return num_colors;
-}
-
-/**
 * Coding of proposals (variables) for the SAT.
 */
 inline int prop(int n, int s, int c)
@@ -82,7 +64,7 @@ bool is_k_colorable(phoeg::Graph& g, int k)
 int chromaticNumber(phoeg::Graph& g)
 {
     /* Approximate the chromatic number and start from there. */
-    int k = coloration(g);
+    int k = phoeg::detail::seq_colors(g);
 
     while (k > 1 && is_k_colorable(g, k - 1))
         --k;
