@@ -15,14 +15,9 @@ using namespace phoeg;
 
 
 //Declaration of methods
-vector<vector<int> > neighborsVector(Graph& g);
-bool neighborsTest(int i, int j, vector<vector<int> > v);
-int chromaticNumberSat(Graph& g, const char* name,  int color, string file);
-bool isCompleteGraph(Graph& g);
-
+int chromaticNumberSat(Graph& g, int color);
 
 bool solutionFound = false;
-int nodesNumber;
 vector<vector<int> > tab;
 bool firstIter=true;
 
@@ -46,38 +41,35 @@ int coloration(Graph& g)
 /**
 * Coding of proposals (variables) for the SAT.
 */
-int prop(int s, int c)
+inline int prop(int n, int s, int c)
 {
-    int n = nodesNumber;
     return (n * (n + 1) - (n - c + 1) * (n - c + 2)) / 2 + s - c;
 }
 
 /**
 * Call the main method (SAT method) with a good approximation.
 */
-int chromaticNumber(Graph& g, const char* name, string file)
+int chromaticNumber(Graph& g)
 {
     int approximation = coloration(g);
-    nodesNumber = num_vertices(g);
-    return chromaticNumberSat(g, name, approximation, file);
+    return chromaticNumberSat(g, approximation);
 }
 
 /**
 * Call the main method (SAT method) with a good approximation on graph6 format.
 */
-int chromaticNumber(string graph6, const char* name, string file)
+int chromaticNumber(string graph6)
 {
     Graph g = convertFromGraph6(graph6);
-    return chromaticNumber(g, name, file);
+    return chromaticNumber(g);
 }
-
 
 /**
 * Calculate the chromatic number of a graph with a SAT problem.
 */
-int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
+int chromaticNumberSat(Graph& g, int color)
 {
-    int n = nodesNumber;
+    int n = num_vertices(g);
     int varNumber = (n * (n + 1) - (n - color) * (n - color + 1)) / 2;
 
     Solver solver;
@@ -90,27 +82,28 @@ int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
     }
 
     // Constraint neighboring
-    for(int i = 1; i <= nodesNumber; i++) 
+    for(int i = 1; i <= n; i++) 
     {
-        for(int j = 1; j <= nodesNumber; j++) 
+        for(int j = 1; j <= n; j++) 
         {
-	        if (edge(i-1,j-1,g).second)
-	        {
-	            for(int c = 1 ; c <= std::min(std::min(i, j),color); c++) 
-	            {
-		            solver.addBinary(~Lit(prop(i,c)),~Lit(prop(j,c)));
-	            }
+            if (edge(i-1,j-1,g).second)
+            {
+                for(int c = 1 ; c <= std::min(std::min(i, j),color); c++)
+                {
+                    solver.addBinary(~Lit(prop(n, i, c)),
+                                     ~Lit(prop(n, j, c)));
+                }
             }
         }
     }
 
     // Constraint existence : One color by node
-    for(int i = 1; i <= nodesNumber; i++) 
+    for(int i = 1; i <= n; i++) 
     {
         lits.clear();
-	    for(int c = 1 ; c <= std::min(color, i); c++) 
+        for(int c = 1 ; c <= std::min(color, i); c++) 
         {
-        	lits.push(Lit(prop(i,c)));
+            lits.push(Lit(prop(n, i, c)));
         }
         solver.addClause(lits);
     }
@@ -119,70 +112,26 @@ int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
     if(result == 1) //Satisfiable
     {
         solutionFound= true;
-        if(file.length() > 0)//Writing results in the file
-        {
-            if(firstIter == true)//File creation
-            {
-                if(file.substr(file.length()-4,file.length()-1).compare(".txt") != 0)//Add extension "txt"
-                {
-                    file = "Results/DisplaySolutions/" +  file + ".txt";
-                }
-                else
-                {
-                    file = "Results/DisplaySolutions/" +  file; 
-                }
-                firstIter = false;
-            }
-
-            ofstream resultFile(file.c_str(), ios::out);//Opening the file for writing
-
-            if(resultFile.is_open())  
-            {
-                resultFile << "Displaying of the solution with the chromatic number = " << color <<  endl;
-                resultFile << ""  <<  endl;
-
-                for(int s = 1 ; s <= nodesNumber; s++) 
-                {
-                    for(int c = 1; c <= color; c++) 
-                    {
-                        if (solver.model[prop(s,c)] == l_True) 
-                        {
-                            if(name != NULL)
-                            {
-                                resultFile << "The vertice " << name[s-1] << " is colored with the color " << c <<  endl;
-                            }
-                            else
-                            {
-                                resultFile << "The vertice " << s-1 << " is colored with the color " << c <<  endl;
-                            }   
-                        }
-                    }   
-                }
-                resultFile.close();//Close file
-            }
-            else
-                cerr << "Can not open file for writing ! " << endl; 
-        }
         if(color > 1)
-	       return chromaticNumberSat(g, name, color-1, file); //Recursive call with k-1
+           return chromaticNumberSat(g, color-1); //Recursive call with k-1
         else // Particular case where we return k=1 (k must be greater than 0)
         {
             firstIter = true;//Re-initiate for the next call
-            return color;        
+            return color;
         }
     }
     else//Insatisfiable
     {
-    	if(solutionFound)//Base case
-    	{
+        if(solutionFound)//Base case
+        {
             firstIter = true;//Re-initiate for the next call
-			return color + 1;//Return the chromatic number
-    	}
-    	else//Particular case where the SAT formula is not satisfiable and we don't have a solution
-    	{
-    		if(color < nodesNumber)
-    			return chromaticNumberSat(g, name, color+1, file); //Recursive call with k+1
-    	}
+            return color + 1;//Return the chromatic number
+        }
+        else//Particular case where the SAT formula is not satisfiable and we don't have a solution
+        {
+            if(color < n)
+                return chromaticNumberSat(g, color+1); //Recursive call with k+1
+        }
         
     }
     return color;//Return value in case of problems
