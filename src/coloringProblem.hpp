@@ -47,8 +47,9 @@ int coloration(Graph& g)
 * Coding of proposals (variables) for the SAT.
 */
 int prop(int s, int c)
-{ 
-   return (c - 1) * nodesNumber + s - 1;
+{
+    int n = nodesNumber;
+    return (n * (n + 1) - (n - c + 1) * (n - c + 2)) / 2 + s - c;
 }
 
 /**
@@ -76,8 +77,9 @@ int chromaticNumber(string graph6, const char* name, string file)
 */
 int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
 {
-    int varNumber = nodesNumber * color;
-	
+    int n = nodesNumber;
+    int varNumber = (n * (n + 1) - (n - color) * (n - color + 1)) / 2;
+
     Solver solver;
     vec<Lit> lits;
 
@@ -94,7 +96,7 @@ int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
         {
 	        if (edge(i-1,j-1,g).second)
 	        {
-	            for(int c = 1 ; c <= color; c++) 
+	            for(int c = 1 ; c <= std::min(std::min(i, j),color); c++) 
 	            {
 		            solver.addBinary(~Lit(prop(i,c)),~Lit(prop(j,c)));
 	            }
@@ -106,7 +108,7 @@ int chromaticNumberSat(Graph& g, const char* name,  int color, string file)
     for(int i = 1; i <= nodesNumber; i++) 
     {
         lits.clear();
-	    for(int c = 1 ; c <= color; c++) 
+	    for(int c = 1 ; c <= std::min(color, i); c++) 
         {
         	lits.push(Lit(prop(i,c)));
         }
