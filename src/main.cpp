@@ -9,6 +9,7 @@
 #include "graph6.hpp"
 #include "invariants.hpp"
 #include "coloringProblem.hpp"
+#include "minimumVertexCoverProblem.hpp"
 #include "graphFeatures.hpp"
 #include "graphGeneration.hpp"
 
