@@ -779,12 +779,6 @@ bool Solver::solve(const vec<Lit>& assumps)
         status = search((int)nof_conflicts, (int)nof_learnts, params);
         nof_conflicts *= 1.5;
         nof_learnts   *= 1.1;
-
-        if(stats.conflicts > 75000)
-        {
-            printf("[WARNING] The resolution of the SAT solver has been suspended --> Possibility to have a wrong answer !  \n");
-            return false;//status == l_False;
-        }
     }
     if (verbosity >= 1)
         //reportf("==============================================================================\n");
