@@ -18,7 +18,7 @@ inline int prop(int n, int s, int c)
 /**
 * Calculate the chromatic number of a graph with a SAT problem.
 */
-bool is_k_colorable(phoeg::Graph& g, int k)
+bool is_k_colorable(const phoeg::Graph& g, int k)
 {
     int i, j, c;
     int n = num_vertices(g);
@@ -54,7 +54,7 @@ bool is_k_colorable(phoeg::Graph& g, int k)
 /**
 * Call the main method (SAT method) with a good approximation.
 */
-int chromaticNumber(phoeg::Graph& g)
+int chromaticNumber(const phoeg::Graph& g)
 {
     /* Approximate the chromatic number and start from there. */
     int k = phoeg::detail::seq_colors(g);
@@ -68,7 +68,7 @@ int chromaticNumber(phoeg::Graph& g)
 /**
 * Call the main method (SAT method) with a good approximation on graph6 format.
 */
-int chromaticNumber(std::string graph6)
+int chromaticNumber(const std::string graph6)
 {
     phoeg::Graph g = phoeg::convertFromGraph6(graph6);
     return chromaticNumber(g);
