@@ -54,7 +54,7 @@ bool is_k_colorable(const phoeg::Graph& g, int k)
 /**
 * Call the main method (SAT method) with a good approximation.
 */
-int chromaticNumber(const phoeg::Graph& g)
+long chromaticNumber(const phoeg::Graph& g)
 {
     /* Approximate the chromatic number and start from there. */
     int k = phoeg::detail::seq_colors(g);
@@ -68,7 +68,7 @@ int chromaticNumber(const phoeg::Graph& g)
 /**
 * Call the main method (SAT method) with a good approximation on graph6 format.
 */
-int chromaticNumber(const std::string graph6)
+long chromaticNumber(const std::string graph6)
 {
     phoeg::Graph g = phoeg::convertFromGraph6(graph6);
     return chromaticNumber(g);

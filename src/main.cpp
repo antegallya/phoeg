@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <functional>
 #include "Minisat/Solver.hpp"
 #include <boost/timer/timer.hpp>
 #include <boost/graph/graph_utility.hpp>
@@ -14,15 +15,14 @@
 using namespace std;
 using namespace boost;
 
-int bad_instances()
+typedef function<long(const phoeg::Graph&)> invariant;
+typedef long(*invariant_c)(const phoeg::Graph&);
+
+int bad_instances(invariant phoeg_method, invariant sat_method)
 {
     int n;
-    int chromatic_phoeg;
-    int chromatic_sat;
-    timer::cpu_timer timer_phoeg;
-    timer_phoeg.stop();
-    timer::cpu_timer timer_sat;
-    timer_sat.stop();
+    int inv_phoeg;
+    int inv_sat;
     timer::cpu_timer timer;
     timer.stop();
 
@@ -36,42 +36,36 @@ int bad_instances()
 
         // PHOEG computation
         timer.start();
-        timer_phoeg.resume();
-        chromatic_phoeg = phoeg::chromaticNumber(g);
-        timer_phoeg.stop();
+        inv_phoeg = phoeg_method(g);
         timer.stop();
         cerr << "PHOEG: " << timer.format();
 
         // SAT computation
         timer.start();
-        timer_sat.resume();
-        chromatic_sat = sat::chromaticNumber(g);
-        timer_sat.stop();
+        inv_sat = sat_method(g);
         timer.stop();
         cerr << "SAT: " << timer.format();
 
-        if(chromatic_phoeg != chromatic_sat) {
+        if(inv_phoeg != inv_sat) {
             cerr << "[ERROR] Not the same values !"
-                 << " PHOEG: " << chromatic_phoeg
-                 << ", SAT: " << chromatic_sat << endl;
+                 << " PHOEG: " << inv_phoeg
+                 << ", SAT: " << inv_sat << endl;
             return 1;
         }
         cerr << endl;
     }
 
-    cerr << "Cumul Time PHOEG: " << timer_phoeg.format()
-         << "Cumul Time SAT  : " << timer_sat.format()
-         << "[INFO] Done for " << n << " graphs." << endl;
+    cerr << "[INFO] Done for " << n << " graphs." << endl;
 
     return 0;
 }
 
-int timings()
+int timings(invariant phoeg_method, invariant sat_method)
 {
     string line;
     int n;
-    int chromatic_phoeg;
-    int chromatic_sat;
+    int inv_phoeg;
+    int inv_sat;
     timer::cpu_timer timer_phoeg;
     timer_phoeg.stop();
     timer::cpu_timer timer_sat;
@@ -87,18 +81,18 @@ int timings()
 
         // PHOEG computation
         timer_phoeg.resume();
-        chromatic_phoeg = phoeg::chromaticNumber(g);
+        inv_phoeg = phoeg_method(g);
         timer_phoeg.stop();
 
         // SAT computation
         timer_sat.resume();
-        chromatic_sat = sat::chromaticNumber(g);
+        inv_sat = sat_method(g);
         timer_sat.stop();
 
-        if(chromatic_phoeg != chromatic_sat) {
+        if(inv_phoeg != inv_sat) {
             cerr << "[ERROR] Not the same values !"
-                 << " PHOEG: " << chromatic_phoeg
-                 << ", SAT: " << chromatic_sat << endl;
+                 << " PHOEG: " << inv_phoeg
+                 << ", SAT: " << inv_sat << endl;
             return 1;
         }
     }
@@ -115,7 +109,8 @@ int timings()
 */
 int main(int argc, char* argv[])
 {
-    return bad_instances();
+    return bad_instances(phoeg::chromaticNumber<phoeg::Graph>,
+                         static_cast<invariant_c>(sat::chromaticNumber));
 }
 
 /* vim: set sw=4: */
