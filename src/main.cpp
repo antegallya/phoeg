@@ -110,8 +110,8 @@ int timings(invariant phoeg_method, invariant sat_method)
 */
 int main(int argc, char* argv[])
 {
-    return bad_instances(phoeg::chromaticNumber<phoeg::Graph>,
-                         static_cast<invariant_c>(sat::chromaticNumber));
+    return bad_instances(phoeg::minVertexCover<phoeg::Graph>,
+                   sat::minimumVertexCover);
 }
 
 /* vim: set sw=4: */

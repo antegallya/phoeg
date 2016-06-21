@@ -5,11 +5,11 @@
 #include "graph.hpp"
 
 //Declaration of methods
-std::vector<std::vector<int> > neighborsVector(phoeg::Graph& g);
+std::vector<std::vector<int> > neighborsVector(const phoeg::Graph& g);
 /**
 * Provides features on the graph
 */
-void describe(phoeg::Graph& g, const char* name)
+void describe(const phoeg::Graph& g, const char* name)
 {
     std::cout << "Ensemble des sommets du graphe: ";
     print_vertices(g, name);
@@ -30,7 +30,7 @@ void describe(phoeg::Graph& g, const char* name)
 /**
 * Check if two vertices are neighbors  => Not used (see neighborsTest())
 */
-bool neighbors(phoeg::Graph& g, int i, int j) 
+bool neighbors(const phoeg::Graph& g, int i, int j) 
 {
     using namespace boost;
     typedef typename graph_traits<phoeg::Graph>::edge_iterator eiter;
@@ -78,7 +78,7 @@ void printNeighbors(std::vector<std::vector<int> > tab)
 /**
 * Print all edges for a graph
 */
-void printEdges(phoeg::Graph& g)
+void printEdges(const phoeg::Graph& g)
 {
     using namespace boost;
     typedef typename graph_traits<phoeg::Graph>::edge_iterator eiter;
@@ -94,7 +94,7 @@ void printEdges(phoeg::Graph& g)
 /**
 * Return the edges number for a graph
 */
-int edgesNumber(phoeg::Graph& g)
+int edgesNumber(const phoeg::Graph& g)
 {
     using namespace boost;
     typedef typename graph_traits<phoeg::Graph>::edge_iterator eiter;
@@ -110,7 +110,7 @@ int edgesNumber(phoeg::Graph& g)
 /**
 * Check if a graph is complete or not
 */
-bool isCompleteGraph(phoeg::Graph& g)
+bool isCompleteGraph(const phoeg::Graph& g)
 {
     std::vector<std::vector<int> > tab = neighborsVector(g);
     int verticesNumber = num_vertices(g); 
@@ -133,7 +133,7 @@ bool isCompleteGraph(phoeg::Graph& g)
 /**
 * Construction of a vector containing all the neighbors of each vertex
 */
-std::vector<std::vector<int> > neighborsVector(phoeg::Graph& g)
+std::vector<std::vector<int> > neighborsVector(const phoeg::Graph& g)
 {
     using namespace boost;
 

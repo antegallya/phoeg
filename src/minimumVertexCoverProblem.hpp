@@ -14,6 +14,9 @@
 #include<string.h>
 #include<stdlib.h>
 
+namespace sat
+{
+
 int **adjencyMatrix;//Adjency matrix for the graph
 int **arrayPointer;//Pointer's array used to create clause
 int *solution;//Array containing the final solution
@@ -22,12 +25,12 @@ bool solFound = false;
 bool first = true;
 
 //Declaration of methods
-int approxMinVertexCover(phoeg::Graph& g);
+int approxMinVertexCover(const phoeg::Graph& g);
 
 /*
 * Creating arrays and values initialization
 */
-void initialisation(phoeg::Graph& g)
+void initialisation(const phoeg::Graph& g)
 {
 
     if(!solFound)
@@ -84,7 +87,7 @@ int compare (const void * a, const void * b)
 /**
 * Compute the Minimum Vertex Cover with SAT
 */
-void mvcSat(phoeg::Graph& g, int k)
+void mvcSat(const phoeg::Graph& g, int k)
 {
     int varNumber = verticesNumber*k;
 
@@ -215,10 +218,9 @@ bool inTab(int array[], int s, int length)
 /**
 * Calculate the minimum vertex cover of a graph with a SAT problem
 */
-int minimumVertexCoverSAT(phoeg::Graph& g, const char* name, int k,
-        bool boolean, std::string file)
+int minimumVertexCoverSAT(const phoeg::Graph& g, int k)
 {
-
+    bool boolean = false;
     initialisation(g);//Matrix initialisation
 
     //Resolution of the problem with the SAT solver (k fixed)
@@ -256,21 +258,11 @@ int minimumVertexCoverSAT(phoeg::Graph& g, const char* name, int k,
 /**
 * Call the main method (SAT method) with a good approximation.
 */
-int minimumVertexCover(phoeg::Graph& g, const char* name, bool boolean,
-        std::string file)
+long minimumVertexCover(const phoeg::Graph& g)
 {
     verticesNumber = num_vertices(g);
     int approximation = approxMinVertexCover(g);
-    return minimumVertexCoverSAT(g, name, approximation, boolean, file);
-}
-/**
-* Call the main method (SAT method) with a good approximation on graph6 format.
-*/
-int minimumVertexCover(std::string graph6, const char* name, bool boolean,
-        std::string file)
-{
-    phoeg::Graph g = phoeg::convertFromGraph6(graph6);
-    return minimumVertexCover(g, name, boolean, file);
+    return minimumVertexCoverSAT(g, approximation);
 }
 
 /**
@@ -278,7 +270,7 @@ int minimumVertexCover(std::string graph6, const char* name, bool boolean,
 *The heuristic provides an approximation for the SAT method
 * (Source = http://www.geeksforgeeks.org/vertex-cover-problem-set-1-introduction-approximate-algorithm-2/)
 */
-int approxMinVertexCover(phoeg::Graph& g)
+int approxMinVertexCover(const phoeg::Graph& g)
 {
     using namespace boost;
 
@@ -341,3 +333,4 @@ int approxMinVertexCover(phoeg::Graph& g)
     return result;
 }
 
+}

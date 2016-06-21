@@ -65,13 +65,4 @@ long chromaticNumber(const phoeg::Graph& g)
     return k;
 }
 
-/**
-* Call the main method (SAT method) with a good approximation on graph6 format.
-*/
-long chromaticNumber(const std::string graph6)
-{
-    phoeg::Graph g = phoeg::convertFromGraph6(graph6);
-    return chromaticNumber(g);
-}
-
 }
