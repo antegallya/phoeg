@@ -110,7 +110,7 @@ int timings(invariant phoeg_method, invariant sat_method)
 */
 int main(int argc, char* argv[])
 {
-    return bad_instances(phoeg::minVertexCover<phoeg::Graph>,
+    return timings(phoeg::minVertexCover<phoeg::Graph>,
                    sat::minimumVertexCover);
 }
 

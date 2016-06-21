@@ -17,8 +17,6 @@
 namespace sat
 {
 
-int **adjencyMatrix;//Adjency matrix for the graph
-int **arrayPointer;//Pointer's array used to create clause
 int *solution;//Array containing the final solution
 int verticesNumber;
 bool solFound = false;
@@ -27,51 +25,24 @@ bool first = true;
 //Declaration of methods
 int approxMinVertexCover(const phoeg::Graph& g);
 
+inline int prop(int n, int i, int j)
+{
+    /*     i
+     *   0 1 2
+     * j 3 4 5
+     *   6 7 8 */
+    return j * n + i;
+}
+
 /*
 * Creating arrays and values initialization
 */
 void initialisation(const phoeg::Graph& g)
 {
-
     if(!solFound)
     {
         //Allocate memory for the array contaning the final solution
         solution=(int*)malloc(verticesNumber*sizeof(int));
-    }
-    int valeur = 0;
-
-    // Allocate memory for pointer to each row
-    adjencyMatrix = (int**) malloc((verticesNumber) * sizeof(int*));
-    arrayPointer = (int**) malloc((verticesNumber) * sizeof(int*));
-
-    // Allocate memory for each row
-    for(int i = 0; i < verticesNumber; i++)
-    {
-        adjencyMatrix[i] = (int*) malloc((verticesNumber) * sizeof(int));
-        arrayPointer[i] = (int*) malloc((verticesNumber) * sizeof(int));
-    }
-
-    //Creating an array containing the neighbors for each vertice
-    std::vector<std::vector<int> > tab = neighborsVector(g);
-
-    //creation of the adjacency matrix of the graph and values
-    // initialisation of pointers (array containing codages of proposals)
-    for(int i = 0; i < verticesNumber; i++)
-    {
-        for(int j = 0; j < verticesNumber; j++)
-        {
-            if (neighborsTest(i,j,tab))
-            {
-                adjencyMatrix[i][j]=1;
-                adjencyMatrix[j][i]=1;
-            }
-            else
-            {
-                adjencyMatrix[i][j] = 0;
-            }
-            arrayPointer[j][i] = valeur;//Add codage of proposals in the array
-            valeur++;
-        }
     }
 }
 
@@ -89,7 +60,8 @@ int compare (const void * a, const void * b)
 */
 void mvcSat(const phoeg::Graph& g, int k)
 {
-    int varNumber = verticesNumber*k;
+    int n = num_vertices(g);
+    int varNumber = n * k;
 
     Solver solver;
     vec<Lit> lits;
@@ -107,7 +79,7 @@ void mvcSat(const phoeg::Graph& g, int k)
         lits.clear();
         for(int i=0; i<verticesNumber; i++)
         {
-            lits.push(Lit(arrayPointer[i][j]));
+            lits.push(Lit(prop(n, i, j)));
         }
         solver.addClause(lits);
     }
@@ -122,8 +94,8 @@ void mvcSat(const phoeg::Graph& g, int k)
             for(int q=p+1; q<=k; q++)//Create binary clause
             {
                 lits.clear();
-                lits.push(~Lit((arrayPointer[m][p-1])));
-                lits.push(~Lit((arrayPointer[m][q-1])));
+                lits.push(~Lit(prop(n, m, p-1)));
+                lits.push(~Lit(prop(n, m, q-1)));
                 solver.addClause(lits);
             }
         }
@@ -137,8 +109,8 @@ void mvcSat(const phoeg::Graph& g, int k)
             for(int q=p+1; q<=verticesNumber; q++)//Create binary clause
             {
                 lits.clear();
-                lits.push(~Lit((arrayPointer[p-1][m-1])));
-                lits.push(~Lit((arrayPointer[q-1][m-1])));
+                lits.push(~Lit(prop(n, p-1, m-1)));
+                lits.push(~Lit(prop(n, q-1, m-1)));
                 solver.addClause(lits);
             }
         }
@@ -149,13 +121,13 @@ void mvcSat(const phoeg::Graph& g, int k)
     {
         for(int j=i; j<verticesNumber; j++)
         {
-            if(adjencyMatrix[i][j]==1)
+            if(edge(i, j, g).second)
             {
                 lits.clear();
                 for(int l=0; l<k; l++)
                 {
-                    lits.push(Lit(arrayPointer[i][l]));
-                    lits.push(Lit(arrayPointer[j][l]));
+                    lits.push(Lit(prop(n, i, l)));
+                    lits.push(Lit(prop(n, j, l)));
                 }
                 solver.addClause(lits);
             }
@@ -182,7 +154,7 @@ void mvcSat(const phoeg::Graph& g, int k)
                 {
                     for(int col=0; col < verticesNumber;col++)
                     {
-                        if(arrayPointer[row][col]==j)
+                        if(prop(n, row, col)==j)
                         {
                             solution[indice]=row;
                             indice++;
