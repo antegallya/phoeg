@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-pedantic -Wall -c -W
-CPPFLAGS=-W -std=c++11
+CPPFLAGS=-W -g -std=c++11
 LDFLAGS=-lboost_system -lboost_timer
 OBJ= Solver.o main.o
 OBJTEST= unitTest.o maintest.o
@@ -9,8 +9,9 @@ BINDIR=/usr/local/bin
 EXEC=project
 EXECTEST=test
 
-HEADERS=coloringProblem.hpp graphFeatures.hpp invariants.hpp graph6.hpp \
-	graph.hpp SAT.h Minisat/Solver.hpp
+HEADERS=coloringProblem.hpp minimumVertexCoverProblem.hpp \
+	graphFeatures.hpp invariants.hpp graph6.hpp \
+	graph.hpp Minisat/Solver.hpp
 
 G++ = g++
 CLEANPROJECT=cleanProject
