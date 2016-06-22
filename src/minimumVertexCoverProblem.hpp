@@ -117,33 +117,12 @@ namespace mvc_detail
     */
     int approxMinVertexCover(const phoeg::Graph& g)
     {
-        using namespace boost;
-
-        std::list<int> *adj;
         int n = num_vertices(g);
-        adj = new std::list<int>[n];
-
-        std::vector<std::vector<int> > tab;
-
-        tab = neighborsVector(g);//Creating an array containing the neighbors for each vertice
-
-        typedef typename graph_traits<phoeg::Graph>::edge_iterator eiter;
-        std::pair<eiter, eiter> ep;
-
-        for (ep = edges(g); ep.first != ep.second; ++ep.first)
-        {
-            int u = source(*ep.first,g), v = target(*ep.first,g);
-            adj[u].push_back(v); // Add w to v’s list.
-            adj[v].push_back(u); // Since the graph is undirected
-        }
-
 
         // Initialize all vertices as not visited.
         bool visited[n];
         for (int i=0; i < n; i++)
-        visited[i] = false;
-
-        std::list<int>::iterator i;
+            visited[i] = false;
 
         // Consider all edges one by one
         for (int u=0; u < n; u++)
@@ -154,9 +133,10 @@ namespace mvc_detail
                 // Go through all adjacents of u and pick the first not
                 // yet visited vertex (We are basically picking an edge
                 // (u, v) from remaining edges.
-                for (i= adj[u].begin(); i != adj[u].end(); ++i)
+                for (int v = 0; v < n; ++v)
                 {
-                    int v = *i;
+                    if (!edge(u, v, g).second)
+                        continue;
                     if (visited[v] == false)
                     {
                         // Add the vertices (u, v) to the result set.
