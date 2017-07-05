@@ -1,6 +1,8 @@
 #ifndef PHOEG_TRANSFORMATIONS_H
 #define PHOEG_TRANSFORMATIONS_H
 
+#include "graph.hpp"
+
 #include <boost/graph/graph_traits.hpp>
 #include <boost/concept/assert.hpp>
 #include <boost/concept/requires.hpp>
@@ -55,7 +57,7 @@ namespace phoeg
   //}
 
   template <class Graph>
-    Graph contract(
+  Graph contract(
              typename boost::graph_traits<Graph>::vertex_descriptor i,
              typename boost::graph_traits<Graph>::vertex_descriptor j,
              const Graph& g)
@@ -107,3 +109,5 @@ namespace phoeg
 }
 
 #endif
+
+// vim:sw=2:
