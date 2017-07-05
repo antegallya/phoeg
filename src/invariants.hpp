@@ -424,6 +424,56 @@ namespace phoeg
     }
 
     /**
+     * Computes the number of non-equivalent
+     * k-colorings of the graph g.
+     * FIXME: Could this be factored with numCol ?
+     */
+    template<class Graph>
+    long numColK(const Graph & g, int k)
+    {
+        long n = order(g);
+        long m = numEdges(g);
+        if (k == n && m == 0)
+        {
+            return 1;
+        }
+        if (minDegree(g) == n-1)
+        {
+            if (k == n)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        typedef std::pair<vertex_iter, vertex_iter> p_vertex_iter;
+        vertex u,v;
+        bool nonEdgeFound = false;
+        for (p_vertex_iter vp = vertices(g);
+             vp.first != vp.second && !nonEdgeFound; ++vp.first)
+        {
+            for (vertex_iter w = vp.first+1;
+                 w != vp.second && !nonEdgeFound; ++w)
+            {
+                if (!edge(*vp.first, *w, g).second)
+                {
+                    u = *vp.first;
+                    v = *w;
+                    nonEdgeFound = true;
+                }
+            }
+        }
+        Graph g1 = contract(u, v, g);
+        long num = numColK(g1, k);
+        Graph g2(g);
+        add_edge(u,v,g2);
+        num += numColK(g2, k);
+        return num;
+    }
+
+    /**
      * Checks weither a graph g is planar.
      * i.e., if it can be drawn without
      * crossing edges.
