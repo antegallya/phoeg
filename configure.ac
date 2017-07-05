@@ -67,10 +67,6 @@ AC_CONFIG_HEADER([src/config.h])
 
 
 dnl Check for needed programs (if not present, configure stop)
-AC_CHECK_PROG([HAVE_LATEX],latex,yes,no)
-if test x"$HAVE_LATEX" = x"no"; then
-  AC_MSG_ERROR([pdflatex is needed by this program.])
-fi
 
 dnl Checks for BOOST library
 AX_BOOST_BASE([1.58],,
