@@ -2,40 +2,39 @@
 #include <boost/graph/graph_utility.hpp>
 #include "graph.hpp"
 #include "graph6.hpp"
-#include "transformations.hpp"
 #include "invariants.hpp"
 
-using namespace std;
-using namespace boost;
-using namespace phoeg;
+void describe(phoeg::Graph& g, const char* name)
+{
+    std::cout << "vertex set: ";
+    boost::print_vertices(g, name);
+    std::cout << "\n";
 
-void describe(Graph& g, const char* name) {
-  cout << "vertex set: ";
-  print_vertices(g, name);
-  cout << endl;
+    std::cout << "edge set: ";
+    print_edges(g, name);
+    std::cout << "\n";
 
-  cout << "edge set: ";
-  print_edges(g, name);
-  cout << endl;
+    std::cout << "incident edges: " << "\n";
+    print_graph(g, name);
+    std::cout << "\n";
 
-  cout << "incident edges: " << endl;
-  print_graph(g, name);
-  cout << endl;
-
-  cout << "NumCol: " << numCol(g) << endl;
+    std::cout << "NumCol: " << phoeg::numCol(g) << "\n";
 }
 
-int main(int, char*[]) {
-  const char* name = "petersen";
+int main(int, char*[])
+{
+    const char* name = "abcdefghij";
 
-  Graph g = convertFromGraph6("IsP@OkWHG");
+    phoeg::Graph g = phoeg::convertFromGraph6("IsP@OkWHG");
 
-  describe(g, name);
+    describe(g, name);
 
-  int k = 3;
-  bool krho = phoeg::detail::is_k_colorable(g, k, true);
-  cout << "Is " << k << " robust-colorable: " << krho << endl;
-  cout << "Its numcol-" << k << " is:" << numColK(g, k) << endl;
+    int k = 3;
+    bool krho = phoeg::detail::is_k_colorable(g, k, true);
+    std::cout << "Is "
+              << k << " robust-colorable: " << krho << "\n";
 
-  return 0;
+    std::cout << "Its numcol-" << k << " is: " << phoeg::numColK(g, k) << "\n";
+
+    return 0;
 }
