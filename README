@@ -1,1 +1,7 @@
 # PHOEG Helps Obtaining Extremal Graphs
+=======================================
+
+Coding style
+============
+Stroustrup with 4 space indent. Namespaces indent. With astyle, we use
+astyle -A4 -N -j
