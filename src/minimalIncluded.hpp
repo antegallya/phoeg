@@ -56,9 +56,12 @@ namespace phoeg {
         /* Finally, we'll treat graphs bigger than G -- or more generally those
          * that we know cannot be subgraphs of G -- and test if G is a subgraph
          * of those -- as they can't be subgraphs of G. */
-        for (; it != end_it; it++) {
+        while (it != end_it) {
             if (subgraphCheck(G, *it)) {
-                P.erase(it);
+                it = P.erase(it);
+            }
+            else {
+                ++it;
             }
         }
 
