@@ -5,16 +5,18 @@
 #include "transformations.hpp"
 
 #include <boost/functional/hash.hpp>
+#include <boost/dynamic_bitset.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/exterior_property.hpp>
 
 #include <vector>
 #include <map>
 #include <limits>
 #include <algorithm>
-#include <deque>
+#include <queue>
 
 #define INF std::numeric_limits<long>::max()
 
@@ -664,6 +666,85 @@ namespace phoeg
 
     return chi;
   }
+
+    using bitset = boost::dynamic_bitset<>;
+
+    template <typename DistanceMatrix>
+    long markSemiTouches(const DistanceMatrix& dm,
+            bitset& dominated, bitset& semidominated, int v) {
+        /* Mark the nodes it semi-covers. */
+        for (int u = 0; u < dm.m_matrix.size(); ++u) {
+            if (dm[u][v] <= 1)
+                dominated[u] = 1;
+            if (dm[u][v] == 1 || dm[u][v] == 2) {
+                if (u == v) std::cout << "Odoudouille !" << std::endl;
+                semidominated[u] = 1;
+            }
+        }
+    }
+
+    template <class Graph>
+    long semiTotalDominationNumber(const Graph & g) {
+        if (!isConnected(g)) return INF;
+
+        int n = order(g);
+
+        /* Run the Floyd-Warshall algorithm to obtain a matrix of shortest
+         * paths lengths between pairs of vertices. */
+        using Edge = typename boost::graph_traits<Graph>::edge_descriptor;
+        using DistanceMatrix =
+            typename boost::exterior_vertex_property<Graph, int>::matrix_type;
+        DistanceMatrix dm(n);
+        boost::constant_property_map<Edge, int> wm(1);
+        floyd_warshall_all_pairs_shortest_paths(g, dm, weight_map(wm));
+
+        /* We search the space of subsets of V(G) in a BFS fashion. First
+         * semi-total dominating set found is a minimal cardinality one.
+         * In a search state triplet (subset, dominated, semidominated, u),
+         * subset marks the vertices in the current partial dominating set,
+         * (semi)dominated marks the vertices already (semi-)dominated by the
+         * subset, u is the last vertex added to subset. */
+        using search_state = std::tuple<bitset, bitset, bitset, int>;
+        std::queue<search_state> q;
+        for (int u = 0; u < n; ++u) {
+            bitset subset(n);
+            subset[u] = 1;
+            bitset dominated(subset);
+            bitset semidominated(n);
+            markSemiTouches(dm, dominated, semidominated, u);
+            /* We don't check if its already dominating, since, by definition
+             * there must be at least two vertices in the set anyway. */
+            q.push(std::make_tuple(subset, dominated, semidominated, u));
+        }
+
+        while (!q.empty()) {
+            search_state state = q.front();
+            q.pop();
+            bitset subset, dominated, semidominated;
+            int u;
+            std::tie(subset, dominated, semidominated, u) = state;
+            /* Here, we try to add a vertex to the current subset. We search
+             * only through vertices of indices > u to avoid symmetries. */
+            for (int v = u+1; v < n; ++v) {
+                /* Make a new search state by taking v in the subset. */
+                bitset subsetv(subset);
+                bitset dominatedv(dominated);
+                bitset semidominatedv(semidominated);
+                subsetv[v] = 1;
+                markSemiTouches(dm, dominatedv, semidominatedv, v);
+                /* Do we, by any chance, have a semi-TD set ? */
+                if (dominatedv.all() && subsetv.is_subset_of(semidominatedv)) {
+                    /* Found a semi-TD set. It's a minimal one. */
+                    return subsetv.count();
+                }
+                /* Not dominating yet, keep searching. */
+                q.push(std::make_tuple(subsetv, dominatedv, semidominatedv,
+                                       v));
+            }
+        }
+
+        return INF;
+    }
 
 } //namespace phoeg
 
