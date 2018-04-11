@@ -10,10 +10,8 @@ int main(int argc, const char* argv[]) {
     for (sig; std::getline(std::cin, sig);)
     {
         phoeg::Graph g = phoeg::convertFromGraph6(sig);
-        if (phoeg::isConnected(g))
-        {
-            v = phoeg::eccentricConnectivity(g);
+        v = phoeg::semiTotalDominationNumber(g);
+        if (v != INF)
             std::cout << sig << "\t" << v << "\n";
-        }
   }
 }
