@@ -256,6 +256,26 @@ namespace phoeg
     }
 
     /**
+     * Return the average distance between all pairs of vertices in g.
+     */
+    template <class Graph>
+    long averageDistance(const Graph & g)
+    {
+        int i, j;
+        int n = order(g);
+        int total_dist = 0;
+        dMatrix dm = floydWarshall(g);
+
+        for(i = 0; i < n; i++) {
+            for (j = i + 1; j < n; j++) {
+                total_dist += dm[i][j];
+            }
+        }
+
+        return total_dist * 2 / (n * (n - 1));
+    }
+
+    /**
      * Returns the diameter of the graph g.
      * i.e., the maximal distance between two nodes.
      * If the graph is not connected, returns INF
