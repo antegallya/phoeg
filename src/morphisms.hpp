@@ -1,7 +1,8 @@
 #ifndef MORPHISMS_H
 #define MORPHISMS_H
 
-#include <boost/graph/vf2_sub_graph_iso.hpp>
+#include "vf2_sub_graph_iso.hpp"
+#include "graph.hpp"
 
 namespace phoeg {
 
