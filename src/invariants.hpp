@@ -749,7 +749,7 @@ namespace phoeg
 
     template <class Graph>
     bool clawFree(const Graph & g) {
-        Graph claw = Graph(3);
+        Graph claw = Graph(4);
         add_edge(0, 1, claw);
         add_edge(0, 2, claw);
         add_edge(0, 3, claw);
