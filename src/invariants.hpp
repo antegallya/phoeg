@@ -208,9 +208,11 @@ namespace phoeg
     {
         long n = order(g);
         dMatrix matrix;
+        matrix.reserve(n);
         for (long i = 0; i < n; ++i)
         {
             std::vector<long> line;
+            line.reserve(n);
             for (long j = 0; j < n; ++j)
             {
                 if (i == j)
@@ -229,23 +231,11 @@ namespace phoeg
             matrix.push_back(line);
         }
         for (long k = 0; k < n; ++k)
-        {
             for (long i = 0; i < n; ++i)
-            {
                 for (long j = 0; j < n; ++j)
-                {
-                    //If both distances are not infinite
-                    if (matrix[i][k] != INF && matrix[k][j] != INF)
-                    {
-                        //If d(i,j) is infinite or distance bigger than d(i,k)+d(k,j)
-                        if (matrix[i][j] == INF || matrix[i][j] > matrix[i][k] + matrix[k][j])
-                        {
-                            matrix[i][j] = matrix[i][k] + matrix[k][j];
-                        }
-                    }
-                }
-            }
-        }
+                    if (matrix[i][k] != INF && matrix[k][j] != INF &&
+                        matrix[i][j] > matrix[i][k] + matrix[k][j])
+                        matrix[i][j] = matrix[i][k] + matrix[k][j];
         return matrix;
     }
 
@@ -670,15 +660,13 @@ namespace phoeg
 
     using bitset = boost::dynamic_bitset<>;
 
-    template <typename DistanceMatrix>
-    long markSemiTouches(const DistanceMatrix& dm,
+    long markSemiTouches(const dMatrix& dm,
             bitset& dominated, bitset& semidominated, int v) {
         /* Mark the nodes it semi-covers. */
-        for (int u = 0; u < dm.m_matrix.size(); ++u) {
+        for (int u = 0; u < dm.size(); ++u) {
             if (dm[u][v] <= 1)
                 dominated[u] = 1;
             if (dm[u][v] == 1 || dm[u][v] == 2) {
-                if (u == v) std::cout << "Odoudouille !" << std::endl;
                 semidominated[u] = 1;
             }
         }
@@ -692,12 +680,7 @@ namespace phoeg
 
         /* Run the Floyd-Warshall algorithm to obtain a matrix of shortest
          * paths lengths between pairs of vertices. */
-        using Edge = typename boost::graph_traits<Graph>::edge_descriptor;
-        using DistanceMatrix =
-            typename boost::exterior_vertex_property<Graph, int>::matrix_type;
-        DistanceMatrix dm(n);
-        boost::constant_property_map<Edge, int> wm(1);
-        floyd_warshall_all_pairs_shortest_paths(g, dm, weight_map(wm));
+        dMatrix dm = distanceMatrix(g);
 
         /* We search the space of subsets of V(G) in a BFS fashion. First
          * semi-total dominating set found is a minimal cardinality one.
