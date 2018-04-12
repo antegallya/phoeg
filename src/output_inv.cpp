@@ -19,14 +19,16 @@ int main(int argc, const char* argv[]) {
         values.clear();
         for (; i < bufcap && cont; ++i) {
             cont = std::getline(std::cin, sig).good();
-            sigs.push_back(sig);
-            values.push_back(INF);
+            if (cont) {
+                sigs.push_back(sig);
+                values.push_back(INF);
+            }
         }
         /* Buffer is full. Process it */
         #pragma omp parallel for shared(sigs, values)
         for (int j = 0; j < sigs.size(); ++j) {
             phoeg::Graph g = phoeg::convertFromGraph6(sigs[j]);
-            values[j] = phoeg::semiTotalDominationNumber(g);
+            values[j] = phoeg::clawFree(g);
         }
         std::cerr << "Output " << sigs.size() << " values" << std::endl;
         for (i = 0; i < sigs.size(); ++i) {
