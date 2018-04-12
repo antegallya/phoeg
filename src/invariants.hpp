@@ -3,6 +3,7 @@
 
 #include "graph.hpp"
 #include "transformations.hpp"
+#include "morphisms.hpp"
 
 #include <boost/functional/hash.hpp>
 #include <boost/dynamic_bitset.hpp>
@@ -744,6 +745,15 @@ namespace phoeg
         }
 
         return INF;
+    }
+
+    template <class Graph>
+    bool clawFree(const Graph & g) {
+        Graph claw = Graph(3);
+        add_edge(0, 1, claw);
+        add_edge(0, 2, claw);
+        add_edge(0, 3, claw);
+        return ! subgraphIso(claw, g);
     }
 
 } //namespace phoeg
