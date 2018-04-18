@@ -674,7 +674,7 @@ namespace phoeg
 
     template <class Graph>
     long semiTotalDominationNumber(const Graph & g) {
-        if (!isConnected(g)) return INF;
+        if (minDegree(g) == 0) return INF;
 
         int n = order(g);
 
