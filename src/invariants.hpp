@@ -731,6 +731,50 @@ namespace phoeg
     }
 
     template <class Graph>
+    long markTouches(const Graph & g, bitset & dominated, int v) {
+        /* Mark the nodes it covers. */
+        for (int u = 0; u < order(g); ++u) {
+            if (edge(u,v,g).second || u == v)
+                dominated[u] = 1;
+        }
+    }
+
+    template <class Graph>
+    long dominationNumber(const Graph & g) {
+        int n = order(g);
+
+        /* We search the space of subsets of V(G) in a BFS fashion. Dominating
+         * set found is a minimal cardinality one. */
+        using search_state = std::tuple<long, bitset, int>;
+        std::queue<search_state> q;
+        q.push(std::make_tuple(0, bitset(n), -1));
+
+        while (!q.empty()) {
+            search_state state = q.front();
+            q.pop();
+            long num;
+            bitset dominated;
+            int u;
+            std::tie(num, dominated, u) = state;
+            /* Here, we try to add a vertex to the current subset. We search
+             * only through vertices of indices > u to avoid symmetries. */
+            for (int v = u+1; v < n; ++v) {
+                /* Make a new search state by taking v in the subset. */
+                bitset dominatedv(dominated);
+                markTouches(g, dominatedv, v);
+                /* Do we, by any chance, have a dominating set ? */
+                if (dominatedv.all()) {
+                    /* Found a dominating set. It's a minimal one. */
+                    return num + 1;
+                }
+                /* Not dominating yet, keep searching. */
+                q.push(std::make_tuple(num + 1, dominatedv, v));
+            }
+        }
+
+        return INF;
+    }
+    template <class Graph>
     bool clawFree(const Graph & g) {
         Graph claw = Graph(4);
         add_edge(0, 1, claw);
