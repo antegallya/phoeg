@@ -731,16 +731,17 @@ namespace phoeg
     }
 
     template <class Graph>
-    long markTouches(const Graph & g, bitset & dominated, int v) {
+    long markTouches(const Graph & g, bitset & dominated, int v,
+            bool total = false) {
         /* Mark the nodes it covers. */
         for (int u = 0; u < order(g); ++u) {
-            if (edge(u,v,g).second || u == v)
+            if (edge(u,v,g).second || (!total && u == v))
                 dominated[u] = 1;
         }
     }
 
     template <class Graph>
-    long dominationNumber(const Graph & g) {
+    long auxDominationNumber(const Graph & g, bool total = false) {
         int n = order(g);
 
         /* We search the space of subsets of V(G) in a BFS fashion. Dominating
@@ -761,7 +762,7 @@ namespace phoeg
             for (int v = u+1; v < n; ++v) {
                 /* Make a new search state by taking v in the subset. */
                 bitset dominatedv(dominated);
-                markTouches(g, dominatedv, v);
+                markTouches(g, dominatedv, v, total);
                 /* Do we, by any chance, have a dominating set ? */
                 if (dominatedv.all()) {
                     /* Found a dominating set. It's a minimal one. */
@@ -774,6 +775,17 @@ namespace phoeg
 
         return INF;
     }
+
+    template <class Graph>
+    long dominationNumber(const Graph & g) {
+        return auxDominationNumber(g);
+    }
+
+    template <class Graph>
+    long totalDominationNumber(const Graph & g) {
+        return auxDominationNumber(g, true);
+    }
+
     template <class Graph>
     bool clawFree(const Graph & g) {
         Graph claw = Graph(4);
