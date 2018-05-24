@@ -249,10 +249,11 @@ namespace phoeg
     }
 
     /**
-     * Return the average distance between all pairs of vertices in g.
+     * Return the Wiener Index of the graph, that is, the sum of distances
+     * between all unordered pairs of vertices in g.
      */
     template <class Graph>
-    long averageDistance(const Graph & g)
+    long wienerIndex(const Graph & g)
     {
         int i, j;
         int n = order(g);
@@ -265,6 +266,17 @@ namespace phoeg
             }
         }
 
+        return total_dist * 2;
+    }
+
+    /**
+     * Return the average distance between all pairs of vertices in g.
+     */
+    template <class Graph>
+    long averageDistance(const Graph & g)
+    {
+        int n = order(g);
+        int total_dist = WienerIndex(g);
         return total_dist * 2 / (n * (n - 1));
     }
 
