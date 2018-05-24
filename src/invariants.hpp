@@ -276,7 +276,7 @@ namespace phoeg
     long averageDistance(const Graph & g)
     {
         int n = order(g);
-        int total_dist = WienerIndex(g);
+        int total_dist = wienerIndex(g);
         return total_dist * 2 / (n * (n - 1));
     }
 
