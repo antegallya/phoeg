@@ -16,7 +16,7 @@ inv_comp_prog=$3
 function comp_inv {
   in=$1
   out=$2
-  parallel --pipe-part -a "$in" --eta -j 12 --workdir . "$inv_comp_prog" > $out
+  parallel --pipe-part --block -100 -a "$in" --eta -j 12 --workdir . "$inv_comp_prog" > $out
 }
 
 # Set these environmental variables to override them,
@@ -77,7 +77,7 @@ then
   case $ans in
     "y"|"Y"|"y*"|"Y*")
       read -p "> What is the invariant type ?: " itype
-      [ $itype == "integer" ] || [ $itype == "boolean" ] || die "Invalid type"
+      [ $itype == "integer" ] || [ $itype == "boolean" ] || [ $itype == "numeric" ] || die "Invalid type"
   ${RUN_PSQL} <<SQL
   CREATE TABLE public.$inv_table
   (
