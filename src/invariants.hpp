@@ -257,12 +257,15 @@ namespace phoeg
     {
         int i, j;
         int n = order(g);
-        int total_dist = 0;
+        long total_dist = 0;
         dMatrix dm = floydWarshall(g);
 
         for(i = 0; i < n; i++) {
             for (j = i + 1; j < n; j++) {
-                total_dist += dm[i][j];
+                if (dm[i][j] != INF)
+                    total_dist += dm[i][j];
+                else
+                    return INF;
             }
         }
 
@@ -273,11 +276,14 @@ namespace phoeg
      * Return the average distance between all pairs of vertices in g.
      */
     template <class Graph>
-    long averageDistance(const Graph & g)
+    double averageDistance(const Graph & g)
     {
         int n = order(g);
-        int total_dist = wienerIndex(g);
-        return total_dist * 2 / (n * (n - 1));
+        long total_dist = wienerIndex(g);
+        if (total_dist != INF)
+            return total_dist * 2 / (n * (n - 1));
+        else
+            return INF;
     }
 
     /**
@@ -523,7 +529,7 @@ namespace phoeg
     }
 
     template <class Graph>
-    std::vector<long> listEccentricities(const Graph & g)
+    std::vector<long> listEccentricities(const Graph & g, bool sort=true)
     {
         dMatrix dist = distanceMatrix(g);
         long n = order(g);
@@ -540,11 +546,29 @@ namespace phoeg
             }
             res[i] = m;
         }
-        make_heap(res.begin(), res.end());
-        sort_heap(res.begin(), res.end());
+        if (sort) {
+            make_heap(res.begin(), res.end());
+            sort_heap(res.begin(), res.end());
+        }
         return res;
     }
 
+    /**
+     * Return the total eccentricity of the graph, that is, the sum of
+     * eccentricities for all vertices of g.
+     */
+    template <class Graph>
+    long totalEccentricity(const Graph & g)
+    {
+        std::vector<long> l = listEccentricities(g, false);
+        long zeta = 0;
+        for (auto& ecc : l)
+            if (ecc != INF)
+                zeta += ecc;
+            else
+                return INF;
+        return zeta;
+    }
     /**
      * Compute the eccentric connectivity of a graph g.
      * i.e., the sum for every node v of the products
@@ -570,7 +594,10 @@ namespace phoeg
                     ecc = dist[i][j];
                 }
             }
-            res += ecc * deg;
+            if (ecc != INF)
+                res += ecc * deg;
+            else
+                return INF;
         }
         return res;
     }
