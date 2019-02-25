@@ -22,6 +22,11 @@ namespace phoeg
 
   typedef typename boost::graph_traits<Graph>::edge_iterator edge_iter;
 
+  template <class Graph>
+  int degree(const typename boost::graph_traits<Graph>::vertex_descriptor& v, const Graph& g) {
+      return out_degree(v, g);
+  }
+
 }
 
 #endif

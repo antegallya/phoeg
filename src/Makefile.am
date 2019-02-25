@@ -8,6 +8,7 @@ output_nc_inc_rot_LDADD = -lnauty
 output_inv_SOURCES = $(h_sources) output_inv.cpp
 output_inv_LDADD = -lnauty
 output_inv_LDFLAGS = -fopenmp
+output_inv_CFLAGS = -fopenmp
 
 check_PROGRAMS = testsBoost
 
