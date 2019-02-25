@@ -504,6 +504,66 @@ namespace phoeg
         return num;
     }
 
+    template<class Graph>
+    long numCol1(const Graph & g) { return numColK(g, 1); }
+
+    template<class Graph>
+    long numCol2(const Graph & g) { return numColK(g, 2); }
+
+    template<class Graph>
+    long numCol3(const Graph & g) { return numColK(g, 3); }
+
+    template<class Graph>
+    long numCol4(const Graph & g) { return numColK(g, 4); }
+
+    template<class Graph>
+    long numCol5(const Graph & g) { return numColK(g, 5); }
+
+    template<class Graph>
+    long numCol6(const Graph & g) { return numColK(g, 6); }
+
+    template<class Graph>
+    long numCol7(const Graph & g) { return numColK(g, 7); }
+
+    template<class Graph>
+    long numCol8(const Graph & g) { return numColK(g, 8); }
+
+    template<class Graph>
+    long numCol9(const Graph & g) { return numColK(g, 9); }
+
+    template<class Graph>
+    long numCol10(const Graph & g) { return numColK(g, 10); }
+
+    template<class Graph>
+    long numCol11(const Graph & g) { return numColK(g, 11); }
+
+    template<class Graph>
+    long numCol12(const Graph & g) { return numColK(g, 12); }
+
+    template<class Graph>
+    long numCol13(const Graph & g) { return numColK(g, 13); }
+
+    template<class Graph>
+    long numCol14(const Graph & g) { return numColK(g, 14); }
+
+    template<class Graph>
+    long numCol15(const Graph & g) { return numColK(g, 15); }
+
+    template<class Graph>
+    long numCol16(const Graph & g) { return numColK(g, 16); }
+
+    template<class Graph>
+    long numCol17(const Graph & g) { return numColK(g, 17); }
+
+    template<class Graph>
+    long numCol18(const Graph & g) { return numColK(g, 18); }
+
+    template<class Graph>
+    long numCol19(const Graph & g) { return numColK(g, 19); }
+
+    template<class Graph>
+    long numCol20(const Graph & g) { return numColK(g, 20); }
+
     /**
      * Checks weither a graph g is planar.
      * i.e., if it can be drawn without
@@ -527,6 +587,10 @@ namespace phoeg
         }
         return boyer_myrvold_planarity_test(h);
     }
+
+    /*template <class Graph>
+    bool isHamiltonianExtensible(const Graph & g)
+    */
 
     template <class Graph>
     std::vector<long> listEccentricities(const Graph & g, bool sort=true)
@@ -833,6 +897,81 @@ namespace phoeg
         add_edge(0, 3, claw);
         return ! subgraphIso(claw, g);
     }
+    /*
+    template <class Graph>
+    long fibonacciNumber(const Graph & g) {
+        //
+        int n = order(g);
+        int m = num_vertices(g);
+        int f = 1;
+
+        // manage more than simplest bases to avoid trivial recursion (its a fibonacci like recursion!)
+        if (n == 0)
+            f = 1;
+        else if (n == 1)
+            f = 2;
+        else if (n == 2)
+        {
+            if (m == 0)
+                f = 4;
+            else if (m == 1)
+                f = 3;
+        }
+        else if (n == 3)
+        {
+            if (m == 0)
+                f = 8;
+            else if (m == 1)
+                f = 6;
+            else if (m == 2)
+                f = 5;
+            else if (m == 3)
+                f = 4;
+        }
+        else if (n == 4)
+        {
+            if (m == 0)
+                f = 16;
+            else if (m == 1)
+                f = 12;
+            else if (m == 2)
+            {
+                if (maxDegree(g) == 2)
+                    f = 10;
+                else
+                    f = 9;
+            }
+            else if (m == 3)
+            {
+                if (maxDegree(g) == 3)
+                    f = 9;
+                else
+                    f = 8;
+            }
+            else if (m == 4)
+                f = 7;
+            else if (m == 5)
+                f = 6;
+            else if (m == 6)
+                f = 5;
+        }
+        else // rec step
+        {
+            boost::shared_array<bool> V = G.get_neighbors(0);
+            for (int i = 0; i < n; ++i) V[i] = !V[i];
+            V[0] = false;
+            GphGraph G1 = G.subgraph(V);
+            int f1 = GphInvFibonacci(G1);
+
+            for (int i = 1; i < n; ++i) V[i] = true;
+            G1 = G.subgraph(V);
+            int f2 = GphInvFibonacci(G1);
+
+            f = f1 + f2;
+        }
+
+        return f;
+    }*/
 
 } //namespace phoeg
 
