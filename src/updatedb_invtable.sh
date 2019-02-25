@@ -3,15 +3,17 @@ set -e # Exit on error.
 set -u # Error on unset variable use.
 
 function usage {
-  echo "Usage: $0 [graphs] [inv_table] [inv_comp_prog]"
+  echo "Usage: $0 <graphs> <inv_table> <inv_comp_prog> [inv_type_table]"
   exit 1
 }
 
-[ $# -eq 3 ] || usage
+[ $# -eq 3 ] || [ $# -eq 4 ] || usage
 
 graphs=$1
 inv_table=$2
 inv_comp_prog=$3
+inv_type_table=""
+[ $# -eq 4 ] && inv_type_table=$4
 
 function comp_inv {
   in=$1
@@ -71,18 +73,17 @@ ${GET_PSQL} <<SQL
      )
 SQL
 )
-if [ "$table_exists" != "t" ]
-then
-  read -p "> Table $inv_table doesn't exist create it (y/N) ?: " ans
-  case $ans in
-    "y"|"Y"|"y*"|"Y*")
-      read -p "> What is the invariant type ?: " itype
-      [ $itype == "integer" ] || [ $itype == "boolean" ] || [ $itype == "numeric" ] || die "Invalid type"
+
+function create_table {
+  itype=$1
+  echo "> Create table $inv_table with value type $itype."
+  [ $itype == "integer" ] || [ $itype == "boolean" ] ||\
+      [ $itype == "numeric" ] || die "Invalid type"
   ${RUN_PSQL} <<SQL
   CREATE TABLE public.$inv_table
   (
     signature text NOT NULL,
-    val integer,
+    val $itype,
     CONSTRAINT pk_$inv_table PRIMARY KEY (signature)
   )
   WITH (
@@ -90,9 +91,23 @@ then
     );
   COMMIT;
 SQL
-    ;;
-    *) die "Table does not exist."
-  esac
+}
+
+if [ "$table_exists" != "t" ]
+then
+  if [ "$inv_type_table" == "" ]
+  then
+    read -p "> Table $inv_table doesn't exist create it (y/N) ?: " ans
+    case $ans in
+      "y"|"Y"|"y*"|"Y*")
+        read -p "> What is the invariant type ?: " itype
+        create_table $itype
+      ;;
+      *) die "Table does not exist."
+    esac
+  else
+    create_table $inv_type_table
+  fi
 fi
 
 echo "> Get unset invariant values."
