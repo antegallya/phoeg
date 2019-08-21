@@ -565,6 +565,36 @@ namespace phoeg
     long numCol20(const Graph & g) { return numColK(g, 20); }
 
     /**
+     * SumBlocks(G) = \sum_{k = 1}^n (k * P(G, k)),
+     * where P(G, k) is numColK(G, k)
+     */
+    template<class Graph>
+    long sumBlocks(const Graph & g)
+    {
+        long sum = 0;
+        long n = order(g);
+        for (int k = 1; k <= n; ++k)
+        {
+            sum += k * numColK(g, k);
+        }
+        return sum;
+    }
+
+    /**
+     * AvCol(G) = SumBlocks(G) / NumCol(G).
+     */
+    template<class Graph>
+    double avCol(const Graph & g)
+    {
+        long numcol = numCol(g);
+
+        if (numcol == 0)
+            return INF;
+
+        return (double) sumBlocks(g) / numcol;
+    }
+
+    /**
      * Checks weither a graph g is planar.
      * i.e., if it can be drawn without
      * crossing edges.
